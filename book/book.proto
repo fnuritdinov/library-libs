@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package book;
 
-option go_package = "github.com/fnuritdinov/libs/bookpb";;
+option go_package = "github.com/fnuritdinov/library-libs/bookpb";
 
 service BookService {
   rpc CreateBook(CreateBookRequest)
