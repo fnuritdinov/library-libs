@@ -1,0 +1,170 @@
+syntax = "proto3";
+
+package book;
+
+option go_package = "github.com/fnuritdinov/libs/bookpb";;
+
+service BookService {
+  rpc CreateBook(CreateBookRequest)
+      returns(BookResponse);
+
+  rpc UpdateBook(UpdateBookRequest)
+      returns(BookResponse);
+
+  rpc DeleteBook(DeleteBookRequest)
+      returns(DeleteBookResponse);
+
+
+  rpc GetCategoryBooks(GetCategoryBooksRequest)
+      returns(GetBooksResponse);
+
+  rpc GetAuthorBooks(GetAuthorBooksRequest)
+      returns(GetBooksResponse);
+
+
+  rpc GetBooks(GetBooksRequest)
+      returns(GetBooksResponse);
+
+  rpc GetBook(GetBookRequest)
+      returns(BookResponse);
+
+  rpc SearchBooks(SearchBooksRequest)
+      returns(GetBooksResponse);
+
+  rpc GetBooksByFilter(GetBooksByParamsRequest)
+      returns(GetBooksResponse);
+
+  rpc UploadBookFile(stream FileChunk)
+      returns(FileResponse);
+
+  rpc UploadCoverFile(stream FileChunk)
+      returns(FileResponse);
+
+  rpc GetBookFile(GetBookFileRequest)
+      returns(stream DownloadFileChunk);
+
+  rpc GetCoverFile(GetCoverFileRequest)
+      returns(stream DownloadFileChunk);
+
+  rpc DeleteFile(DeleteFileRequest)
+      returns(DeleteFileResponse);
+
+}
+
+message CreateBookRequest {
+  string title = 1;
+  string description = 2;
+  int64 author_id = 3;
+  int64 category_id = 4;
+  int64 pdf_file_id = 5;
+  int64 cover_file_id = 6;
+  string language = 7;
+  int32 page_count = 8;
+  int32 publication_year = 9;
+}
+
+message BookResponse {
+  int64 id = 1;
+  string title = 2;
+  string description = 3;
+  int64 author_id = 4;
+  int64 category_id = 5;
+  int64 pdf_file_id = 6;
+  int64 cover_file_id = 7;
+  string language = 8;
+  int32 page_count = 9;
+  int32 publication_year = 10;
+  int32 view_count = 11;
+  string created_at = 12;
+  string updated_at = 13;
+}
+
+message UpdateBookRequest {
+  int64 id = 1;
+  string title = 2;
+  string description = 3;
+  int64 author_id = 4;
+  int64 category_id = 5;
+  int64 pdf_file_id = 6;
+  int64 cover_file_id = 7;
+  string language = 8;
+  int32 page_count = 9;
+  int32 publication_year = 10;
+}
+
+message DeleteBookRequest {
+  int64 book_id = 1;
+}
+
+message DeleteBookResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetCategoryBooksRequest {
+  int64 category_id = 1;
+}
+
+message GetBooksResponse {
+  repeated BookResponse books = 1;
+}
+
+message GetAuthorBooksRequest {
+  int64 author_id = 1;
+}
+
+message GetBooksRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message GetBookRequest {
+  int64 book_id = 1;
+}
+
+message SearchBooksRequest {
+  string query = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message GetBooksByParamsRequest {
+  string query = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+
+message FileResponse {
+  int64 id = 1;
+  bool success = 2;
+  string message = 3;
+  string path = 4;
+}
+
+message GetBookFileRequest {
+  int64 file_id = 1;
+}
+
+message GetCoverFileRequest {
+  int64 file_id = 1;
+}
+
+message DownloadFileChunk {
+  bytes content = 1;
+}
+
+message FileChunk {
+  bytes content = 1;
+  string file_name = 2;
+  string original_file_name = 3;
+}
+
+message DeleteFileRequest {
+  int64 file_id = 1;
+}
+
+message DeleteFileResponse {
+  bool success = 1;
+  string message = 2;
+}
