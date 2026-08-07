@@ -86,7 +86,6 @@ message AuthorResponse {
   string first_name = 2;
   string last_name = 3;
   string biography = 4;
-  int64 photo_file_id = 5;
   string created_at = 6;
   string updated_at = 7;
 }
