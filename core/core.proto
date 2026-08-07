@@ -88,6 +88,7 @@ message AuthorResponse {
   string biography = 4;
   string created_at = 6;
   string updated_at = 7;
+  string deleted_at = 8;
 }
 
 message GetAuthorsRequest {

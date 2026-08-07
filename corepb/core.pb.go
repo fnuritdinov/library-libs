@@ -414,6 +414,7 @@ type AuthorResponse struct {
 	Biography     string                 `protobuf:"bytes,4,opt,name=biography,proto3" json:"biography,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     string                 `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	DeletedAt     string                 `protobuf:"bytes,8,opt,name=deleted_at,json=deletedAt,proto3" json:"deleted_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -486,6 +487,13 @@ func (x *AuthorResponse) GetCreatedAt() string {
 func (x *AuthorResponse) GetUpdatedAt() string {
 	if x != nil {
 		return x.UpdatedAt
+	}
+	return ""
+}
+
+func (x *AuthorResponse) GetDeletedAt() string {
+	if x != nil {
+		return x.DeletedAt
 	}
 	return ""
 }
@@ -869,7 +877,7 @@ const file_core_core_proto_rawDesc = "" +
 	"categoryId\"L\n" +
 	"\x16DeleteCategoryResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\xb8\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\xd7\x01\n" +
 	"\x0eAuthorResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
 	"\n" +
@@ -879,7 +887,9 @@ const file_core_core_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x06 \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\a \x01(\tR\tupdatedAt\"\x13\n" +
+	"updated_at\x18\a \x01(\tR\tupdatedAt\x12\x1d\n" +
+	"\n" +
+	"deleted_at\x18\b \x01(\tR\tdeletedAt\"\x13\n" +
 	"\x11GetAuthorsRequest\"D\n" +
 	"\x12GetAuthorsResponse\x12.\n" +
 	"\aauthors\x18\x01 \x03(\v2\x14.core.AuthorResponseR\aauthors\"/\n" +
