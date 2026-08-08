@@ -8,10 +8,10 @@ package corepb
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,32 +20,36 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CoreService_GetCategories_FullMethodName  = "/core.CoreService/GetCategories"
-	CoreService_GetCategory_FullMethodName    = "/core.CoreService/GetCategory"
-	CoreService_CreateCategory_FullMethodName = "/core.CoreService/CreateCategory"
-	CoreService_UpdateCategory_FullMethodName = "/core.CoreService/UpdateCategory"
-	CoreService_DeleteCategory_FullMethodName = "/core.CoreService/DeleteCategory"
-	CoreService_GetAuthors_FullMethodName     = "/core.CoreService/GetAuthors"
-	CoreService_GetAuthor_FullMethodName      = "/core.CoreService/GetAuthor"
-	CoreService_CreateAuthor_FullMethodName   = "/core.CoreService/CreateAuthor"
-	CoreService_UpdateAuthor_FullMethodName   = "/core.CoreService/UpdateAuthor"
-	CoreService_DeleteAuthor_FullMethodName   = "/core.CoreService/DeleteAuthor"
+	CoreService_CreateAuthor_FullMethodName    = "/core.CoreService/CreateAuthor"
+	CoreService_GetAuthor_FullMethodName       = "/core.CoreService/GetAuthor"
+	CoreService_ListAuthors_FullMethodName     = "/core.CoreService/ListAuthors"
+	CoreService_UpdateAuthor_FullMethodName    = "/core.CoreService/UpdateAuthor"
+	CoreService_DeleteAuthor_FullMethodName    = "/core.CoreService/DeleteAuthor"
+	CoreService_GetAuthorsByIds_FullMethodName = "/core.CoreService/GetAuthorsByIds"
+	CoreService_CreateCategory_FullMethodName  = "/core.CoreService/CreateCategory"
+	CoreService_GetCategory_FullMethodName     = "/core.CoreService/GetCategory"
+	CoreService_ListCategories_FullMethodName  = "/core.CoreService/ListCategories"
+	CoreService_UpdateCategory_FullMethodName  = "/core.CoreService/UpdateCategory"
+	CoreService_DeleteCategory_FullMethodName  = "/core.CoreService/DeleteCategory"
 )
 
 // CoreServiceClient is the client API for CoreService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CoreServiceClient interface {
-	GetCategories(ctx context.Context, in *GetCategoriesRequest, opts ...grpc.CallOption) (*GetCategoriesResponse, error)
-	GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*CategoryResponse, error)
-	CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CategoryResponse, error)
-	UpdateCategory(ctx context.Context, in *UpdateCategoryRequest, opts ...grpc.CallOption) (*CategoryResponse, error)
-	DeleteCategory(ctx context.Context, in *DeleteCategoryRequest, opts ...grpc.CallOption) (*DeleteCategoryResponse, error)
-	GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error)
-	GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*AuthorResponse, error)
-	CreateAuthor(ctx context.Context, in *CreateAuthorRequest, opts ...grpc.CallOption) (*AuthorResponse, error)
-	UpdateAuthor(ctx context.Context, in *UpdateAuthorRequest, opts ...grpc.CallOption) (*AuthorResponse, error)
-	DeleteAuthor(ctx context.Context, in *DeleteAuthorRequest, opts ...grpc.CallOption) (*DeleteAuthorResponse, error)
+	CreateAuthor(ctx context.Context, in *CreateAuthorRequest, opts ...grpc.CallOption) (*Author, error)
+	GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*Author, error)
+	ListAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error)
+	UpdateAuthor(ctx context.Context, in *UpdateAuthorRequest, opts ...grpc.CallOption) (*Author, error)
+	DeleteAuthor(ctx context.Context, in *DeleteAuthorRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Нужен gateway: получить сразу несколько авторов по их id,
+	// чтобы подставить имена в список книг одним запросом.
+	GetAuthorsByIds(ctx context.Context, in *GetAuthorsByIdsRequest, opts ...grpc.CallOption) (*GetAuthorsByIdsResponse, error)
+	CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*Category, error)
+	GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*Category, error)
+	ListCategories(ctx context.Context, in *GetCategoriesRequest, opts ...grpc.CallOption) (*GetCategoriesResponse, error)
+	UpdateCategory(ctx context.Context, in *UpdateCategoryRequest, opts ...grpc.CallOption) (*Category, error)
+	DeleteCategory(ctx context.Context, in *DeleteCategoryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type coreServiceClient struct {
@@ -56,79 +60,9 @@ func NewCoreServiceClient(cc grpc.ClientConnInterface) CoreServiceClient {
 	return &coreServiceClient{cc}
 }
 
-func (c *coreServiceClient) GetCategories(ctx context.Context, in *GetCategoriesRequest, opts ...grpc.CallOption) (*GetCategoriesResponse, error) {
+func (c *coreServiceClient) CreateAuthor(ctx context.Context, in *CreateAuthorRequest, opts ...grpc.CallOption) (*Author, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetCategoriesResponse)
-	err := c.cc.Invoke(ctx, CoreService_GetCategories_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *coreServiceClient) GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*CategoryResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CategoryResponse)
-	err := c.cc.Invoke(ctx, CoreService_GetCategory_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *coreServiceClient) CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CategoryResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CategoryResponse)
-	err := c.cc.Invoke(ctx, CoreService_CreateCategory_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *coreServiceClient) UpdateCategory(ctx context.Context, in *UpdateCategoryRequest, opts ...grpc.CallOption) (*CategoryResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CategoryResponse)
-	err := c.cc.Invoke(ctx, CoreService_UpdateCategory_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *coreServiceClient) DeleteCategory(ctx context.Context, in *DeleteCategoryRequest, opts ...grpc.CallOption) (*DeleteCategoryResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteCategoryResponse)
-	err := c.cc.Invoke(ctx, CoreService_DeleteCategory_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *coreServiceClient) GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetAuthorsResponse)
-	err := c.cc.Invoke(ctx, CoreService_GetAuthors_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *coreServiceClient) GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*AuthorResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthorResponse)
-	err := c.cc.Invoke(ctx, CoreService_GetAuthor_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *coreServiceClient) CreateAuthor(ctx context.Context, in *CreateAuthorRequest, opts ...grpc.CallOption) (*AuthorResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthorResponse)
+	out := new(Author)
 	err := c.cc.Invoke(ctx, CoreService_CreateAuthor_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -136,9 +70,29 @@ func (c *coreServiceClient) CreateAuthor(ctx context.Context, in *CreateAuthorRe
 	return out, nil
 }
 
-func (c *coreServiceClient) UpdateAuthor(ctx context.Context, in *UpdateAuthorRequest, opts ...grpc.CallOption) (*AuthorResponse, error) {
+func (c *coreServiceClient) GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*Author, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthorResponse)
+	out := new(Author)
+	err := c.cc.Invoke(ctx, CoreService_GetAuthor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coreServiceClient) ListAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAuthorsResponse)
+	err := c.cc.Invoke(ctx, CoreService_ListAuthors_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coreServiceClient) UpdateAuthor(ctx context.Context, in *UpdateAuthorRequest, opts ...grpc.CallOption) (*Author, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Author)
 	err := c.cc.Invoke(ctx, CoreService_UpdateAuthor_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -146,10 +100,70 @@ func (c *coreServiceClient) UpdateAuthor(ctx context.Context, in *UpdateAuthorRe
 	return out, nil
 }
 
-func (c *coreServiceClient) DeleteAuthor(ctx context.Context, in *DeleteAuthorRequest, opts ...grpc.CallOption) (*DeleteAuthorResponse, error) {
+func (c *coreServiceClient) DeleteAuthor(ctx context.Context, in *DeleteAuthorRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteAuthorResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, CoreService_DeleteAuthor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coreServiceClient) GetAuthorsByIds(ctx context.Context, in *GetAuthorsByIdsRequest, opts ...grpc.CallOption) (*GetAuthorsByIdsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAuthorsByIdsResponse)
+	err := c.cc.Invoke(ctx, CoreService_GetAuthorsByIds_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coreServiceClient) CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*Category, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Category)
+	err := c.cc.Invoke(ctx, CoreService_CreateCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coreServiceClient) GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*Category, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Category)
+	err := c.cc.Invoke(ctx, CoreService_GetCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coreServiceClient) ListCategories(ctx context.Context, in *GetCategoriesRequest, opts ...grpc.CallOption) (*GetCategoriesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCategoriesResponse)
+	err := c.cc.Invoke(ctx, CoreService_ListCategories_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coreServiceClient) UpdateCategory(ctx context.Context, in *UpdateCategoryRequest, opts ...grpc.CallOption) (*Category, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Category)
+	err := c.cc.Invoke(ctx, CoreService_UpdateCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *coreServiceClient) DeleteCategory(ctx context.Context, in *DeleteCategoryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, CoreService_DeleteCategory_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -160,16 +174,19 @@ func (c *coreServiceClient) DeleteAuthor(ctx context.Context, in *DeleteAuthorRe
 // All implementations must embed UnimplementedCoreServiceServer
 // for forward compatibility.
 type CoreServiceServer interface {
-	GetCategories(context.Context, *GetCategoriesRequest) (*GetCategoriesResponse, error)
-	GetCategory(context.Context, *GetCategoryRequest) (*CategoryResponse, error)
-	CreateCategory(context.Context, *CreateCategoryRequest) (*CategoryResponse, error)
-	UpdateCategory(context.Context, *UpdateCategoryRequest) (*CategoryResponse, error)
-	DeleteCategory(context.Context, *DeleteCategoryRequest) (*DeleteCategoryResponse, error)
-	GetAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error)
-	GetAuthor(context.Context, *GetAuthorRequest) (*AuthorResponse, error)
-	CreateAuthor(context.Context, *CreateAuthorRequest) (*AuthorResponse, error)
-	UpdateAuthor(context.Context, *UpdateAuthorRequest) (*AuthorResponse, error)
-	DeleteAuthor(context.Context, *DeleteAuthorRequest) (*DeleteAuthorResponse, error)
+	CreateAuthor(context.Context, *CreateAuthorRequest) (*Author, error)
+	GetAuthor(context.Context, *GetAuthorRequest) (*Author, error)
+	ListAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error)
+	UpdateAuthor(context.Context, *UpdateAuthorRequest) (*Author, error)
+	DeleteAuthor(context.Context, *DeleteAuthorRequest) (*emptypb.Empty, error)
+	// Нужен gateway: получить сразу несколько авторов по их id,
+	// чтобы подставить имена в список книг одним запросом.
+	GetAuthorsByIds(context.Context, *GetAuthorsByIdsRequest) (*GetAuthorsByIdsResponse, error)
+	CreateCategory(context.Context, *CreateCategoryRequest) (*Category, error)
+	GetCategory(context.Context, *GetCategoryRequest) (*Category, error)
+	ListCategories(context.Context, *GetCategoriesRequest) (*GetCategoriesResponse, error)
+	UpdateCategory(context.Context, *UpdateCategoryRequest) (*Category, error)
+	DeleteCategory(context.Context, *DeleteCategoryRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedCoreServiceServer()
 }
 
@@ -180,35 +197,38 @@ type CoreServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCoreServiceServer struct{}
 
-func (UnimplementedCoreServiceServer) GetCategories(context.Context, *GetCategoriesRequest) (*GetCategoriesResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetCategories not implemented")
-}
-func (UnimplementedCoreServiceServer) GetCategory(context.Context, *GetCategoryRequest) (*CategoryResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetCategory not implemented")
-}
-func (UnimplementedCoreServiceServer) CreateCategory(context.Context, *CreateCategoryRequest) (*CategoryResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateCategory not implemented")
-}
-func (UnimplementedCoreServiceServer) UpdateCategory(context.Context, *UpdateCategoryRequest) (*CategoryResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method UpdateCategory not implemented")
-}
-func (UnimplementedCoreServiceServer) DeleteCategory(context.Context, *DeleteCategoryRequest) (*DeleteCategoryResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteCategory not implemented")
-}
-func (UnimplementedCoreServiceServer) GetAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetAuthors not implemented")
-}
-func (UnimplementedCoreServiceServer) GetAuthor(context.Context, *GetAuthorRequest) (*AuthorResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetAuthor not implemented")
-}
-func (UnimplementedCoreServiceServer) CreateAuthor(context.Context, *CreateAuthorRequest) (*AuthorResponse, error) {
+func (UnimplementedCoreServiceServer) CreateAuthor(context.Context, *CreateAuthorRequest) (*Author, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateAuthor not implemented")
 }
-func (UnimplementedCoreServiceServer) UpdateAuthor(context.Context, *UpdateAuthorRequest) (*AuthorResponse, error) {
+func (UnimplementedCoreServiceServer) GetAuthor(context.Context, *GetAuthorRequest) (*Author, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAuthor not implemented")
+}
+func (UnimplementedCoreServiceServer) ListAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListAuthors not implemented")
+}
+func (UnimplementedCoreServiceServer) UpdateAuthor(context.Context, *UpdateAuthorRequest) (*Author, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateAuthor not implemented")
 }
-func (UnimplementedCoreServiceServer) DeleteAuthor(context.Context, *DeleteAuthorRequest) (*DeleteAuthorResponse, error) {
+func (UnimplementedCoreServiceServer) DeleteAuthor(context.Context, *DeleteAuthorRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteAuthor not implemented")
+}
+func (UnimplementedCoreServiceServer) GetAuthorsByIds(context.Context, *GetAuthorsByIdsRequest) (*GetAuthorsByIdsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAuthorsByIds not implemented")
+}
+func (UnimplementedCoreServiceServer) CreateCategory(context.Context, *CreateCategoryRequest) (*Category, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateCategory not implemented")
+}
+func (UnimplementedCoreServiceServer) GetCategory(context.Context, *GetCategoryRequest) (*Category, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCategory not implemented")
+}
+func (UnimplementedCoreServiceServer) ListCategories(context.Context, *GetCategoriesRequest) (*GetCategoriesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListCategories not implemented")
+}
+func (UnimplementedCoreServiceServer) UpdateCategory(context.Context, *UpdateCategoryRequest) (*Category, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateCategory not implemented")
+}
+func (UnimplementedCoreServiceServer) DeleteCategory(context.Context, *DeleteCategoryRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteCategory not implemented")
 }
 func (UnimplementedCoreServiceServer) mustEmbedUnimplementedCoreServiceServer() {}
 func (UnimplementedCoreServiceServer) testEmbeddedByValue()                     {}
@@ -231,110 +251,20 @@ func RegisterCoreServiceServer(s grpc.ServiceRegistrar, srv CoreServiceServer) {
 	s.RegisterService(&CoreService_ServiceDesc, srv)
 }
 
-func _CoreService_GetCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCategoriesRequest)
+func _CoreService_CreateAuthor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAuthorRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CoreServiceServer).GetCategories(ctx, in)
+		return srv.(CoreServiceServer).CreateAuthor(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CoreService_GetCategories_FullMethodName,
+		FullMethod: CoreService_CreateAuthor_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServiceServer).GetCategories(ctx, req.(*GetCategoriesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CoreService_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCategoryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CoreServiceServer).GetCategory(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CoreService_GetCategory_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServiceServer).GetCategory(ctx, req.(*GetCategoryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CoreService_CreateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateCategoryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CoreServiceServer).CreateCategory(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CoreService_CreateCategory_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServiceServer).CreateCategory(ctx, req.(*CreateCategoryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CoreService_UpdateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateCategoryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CoreServiceServer).UpdateCategory(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CoreService_UpdateCategory_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServiceServer).UpdateCategory(ctx, req.(*UpdateCategoryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CoreService_DeleteCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteCategoryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CoreServiceServer).DeleteCategory(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CoreService_DeleteCategory_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServiceServer).DeleteCategory(ctx, req.(*DeleteCategoryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CoreService_GetAuthors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAuthorsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CoreServiceServer).GetAuthors(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CoreService_GetAuthors_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServiceServer).GetAuthors(ctx, req.(*GetAuthorsRequest))
+		return srv.(CoreServiceServer).CreateAuthor(ctx, req.(*CreateAuthorRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -357,20 +287,20 @@ func _CoreService_GetAuthor_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CoreService_CreateAuthor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateAuthorRequest)
+func _CoreService_ListAuthors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAuthorsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CoreServiceServer).CreateAuthor(ctx, in)
+		return srv.(CoreServiceServer).ListAuthors(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CoreService_CreateAuthor_FullMethodName,
+		FullMethod: CoreService_ListAuthors_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServiceServer).CreateAuthor(ctx, req.(*CreateAuthorRequest))
+		return srv.(CoreServiceServer).ListAuthors(ctx, req.(*GetAuthorsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -411,6 +341,114 @@ func _CoreService_DeleteAuthor_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CoreService_GetAuthorsByIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAuthorsByIdsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoreServiceServer).GetAuthorsByIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CoreService_GetAuthorsByIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoreServiceServer).GetAuthorsByIds(ctx, req.(*GetAuthorsByIdsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CoreService_CreateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoreServiceServer).CreateCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CoreService_CreateCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoreServiceServer).CreateCategory(ctx, req.(*CreateCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CoreService_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoreServiceServer).GetCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CoreService_GetCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoreServiceServer).GetCategory(ctx, req.(*GetCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CoreService_ListCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCategoriesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoreServiceServer).ListCategories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CoreService_ListCategories_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoreServiceServer).ListCategories(ctx, req.(*GetCategoriesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CoreService_UpdateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoreServiceServer).UpdateCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CoreService_UpdateCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoreServiceServer).UpdateCategory(ctx, req.(*UpdateCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CoreService_DeleteCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CoreServiceServer).DeleteCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CoreService_DeleteCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CoreServiceServer).DeleteCategory(ctx, req.(*DeleteCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CoreService_ServiceDesc is the grpc.ServiceDesc for CoreService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -419,36 +457,16 @@ var CoreService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CoreServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetCategories",
-			Handler:    _CoreService_GetCategories_Handler,
-		},
-		{
-			MethodName: "GetCategory",
-			Handler:    _CoreService_GetCategory_Handler,
-		},
-		{
-			MethodName: "CreateCategory",
-			Handler:    _CoreService_CreateCategory_Handler,
-		},
-		{
-			MethodName: "UpdateCategory",
-			Handler:    _CoreService_UpdateCategory_Handler,
-		},
-		{
-			MethodName: "DeleteCategory",
-			Handler:    _CoreService_DeleteCategory_Handler,
-		},
-		{
-			MethodName: "GetAuthors",
-			Handler:    _CoreService_GetAuthors_Handler,
+			MethodName: "CreateAuthor",
+			Handler:    _CoreService_CreateAuthor_Handler,
 		},
 		{
 			MethodName: "GetAuthor",
 			Handler:    _CoreService_GetAuthor_Handler,
 		},
 		{
-			MethodName: "CreateAuthor",
-			Handler:    _CoreService_CreateAuthor_Handler,
+			MethodName: "ListAuthors",
+			Handler:    _CoreService_ListAuthors_Handler,
 		},
 		{
 			MethodName: "UpdateAuthor",
@@ -457,6 +475,30 @@ var CoreService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteAuthor",
 			Handler:    _CoreService_DeleteAuthor_Handler,
+		},
+		{
+			MethodName: "GetAuthorsByIds",
+			Handler:    _CoreService_GetAuthorsByIds_Handler,
+		},
+		{
+			MethodName: "CreateCategory",
+			Handler:    _CoreService_CreateCategory_Handler,
+		},
+		{
+			MethodName: "GetCategory",
+			Handler:    _CoreService_GetCategory_Handler,
+		},
+		{
+			MethodName: "ListCategories",
+			Handler:    _CoreService_ListCategories_Handler,
+		},
+		{
+			MethodName: "UpdateCategory",
+			Handler:    _CoreService_UpdateCategory_Handler,
+		},
+		{
+			MethodName: "DeleteCategory",
+			Handler:    _CoreService_DeleteCategory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

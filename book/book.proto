@@ -2,53 +2,63 @@ syntax = "proto3";
 
 package book;
 
-option go_package = "github.com/fnuritdinov/library-libs/bookpb";
+option go_package = "github.com/fnuritdinov/library-libs/bookpb;bookpb";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 service BookService {
-  rpc CreateBook(CreateBookRequest)
-      returns(BookResponse);
+  rpc CreateBook(CreateBookRequest) returns (Book);
+  rpc GetBook(GetBookRequest) returns (Book);
+  rpc GetBooks(GetBooksRequest) returns (GetBooksResponse);
+  rpc UpdateBook(UpdateBookRequest) returns (Book);
+  rpc DeleteBook(DeleteBookRequest) returns (google.protobuf.Empty);
 
-  rpc UpdateBook(UpdateBookRequest)
-      returns(BookResponse);
+  rpc IncrementDownloadCount(IncrementDownloadCountRequest) returns (google.protobuf.Empty);
 
-  rpc DeleteBook(DeleteBookRequest)
-      returns(DeleteBookResponse);
+  // Gateway зовёт перед удалением автора/категории в core-сервисе.
+  rpc CountBooksByAuthor(CountBooksByAuthorRequest) returns (CountResponse);
+  rpc CountBooksByCategory(CountBooksByCategoryRequest) returns (CountResponse);
 
+  // Байты через gRPC не ходят — только ссылки на R2.
+  rpc CreateUploadURL(CreateUploadURLRequest) returns (UploadURL);
+  rpc GetFileURL(GetFileURLRequest) returns (FileURL);
+  rpc DeleteFile(DeleteFileRequest) returns (google.protobuf.Empty);
+}
 
-  rpc GetCategoryBooks(GetCategoryBooksRequest)
-      returns(GetBooksResponse);
+message Book {
+  int64 id = 1;
+  string title = 2;
+  string description = 3;
+  int64 author_id = 4;
+  int64 category_id = 5;
+  optional int64 pdf_file_id = 6;
+  optional int64 cover_file_id = 7;
+  string language = 8;
+  int32 page_count = 9;
+  int32 publication_year = 10;
+  int64 download_count = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+  optional google.protobuf.Timestamp deleted_at = 14;
+  optional string cover_url = 15;   // готовый URL для <img src>
+}
 
-  rpc GetAuthorBooks(GetAuthorBooksRequest)
-      returns(GetBooksResponse);
+enum FileKind {
+  FILE_KIND_UNSPECIFIED = 0;
+  FILE_KIND_PDF = 1;
+  FILE_KIND_COVER = 2;
+}
 
+message PageRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
 
-  rpc GetBooks(GetBooksRequest)
-      returns(GetBooksResponse);
-
-  rpc GetBook(GetBookRequest)
-      returns(BookResponse);
-
-  rpc SearchBooks(SearchBooksRequest)
-      returns(GetBooksResponse);
-
-  rpc GetBooksByFilter(GetBooksByParamsRequest)
-      returns(GetBooksResponse);
-
-  rpc UploadBookFile(stream FileChunk)
-      returns(FileResponse);
-
-  rpc UploadCoverFile(stream FileChunk)
-      returns(FileResponse);
-
-  rpc GetBookFile(GetBookFileRequest)
-      returns(stream DownloadFileChunk);
-
-  rpc GetCoverFile(GetCoverFileRequest)
-      returns(stream DownloadFileChunk);
-
-  rpc DeleteFile(DeleteFileRequest)
-      returns(DeleteFileResponse);
-
+message PageInfo {
+  int64 total = 1;           // для "страница 3 из 47"
+  int32 limit = 2;
+  int32 offset = 3;
 }
 
 message CreateBookRequest {
@@ -56,115 +66,94 @@ message CreateBookRequest {
   string description = 2;
   int64 author_id = 3;
   int64 category_id = 4;
-  int64 pdf_file_id = 5;
-  int64 cover_file_id = 6;
+  optional int64 pdf_file_id = 5;
+  optional int64 cover_file_id = 6;
   string language = 7;
   int32 page_count = 8;
   int32 publication_year = 9;
-}
-
-message BookResponse {
-  int64 id = 1;
-  string title = 2;
-  string description = 3;
-  int64 author_id = 4;
-  int64 category_id = 5;
-  int64 pdf_file_id = 6;
-  int64 cover_file_id = 7;
-  string language = 8;
-  int32 page_count = 9;
-  int32 publication_year = 10;
-  int32 view_count = 11;
-  string created_at = 12;
-  string updated_at = 13;
-}
-
-message UpdateBookRequest {
-  int64 id = 1;
-  string title = 2;
-  string description = 3;
-  int64 author_id = 4;
-  int64 category_id = 5;
-  int64 pdf_file_id = 6;
-  int64 cover_file_id = 7;
-  string language = 8;
-  int32 page_count = 9;
-  int32 publication_year = 10;
-}
-
-message DeleteBookRequest {
-  int64 book_id = 1;
-}
-
-message DeleteBookResponse {
-  bool success = 1;
-  string message = 2;
-}
-
-message GetCategoryBooksRequest {
-  int64 category_id = 1;
-}
-
-message GetBooksResponse {
-  repeated BookResponse books = 1;
-}
-
-message GetAuthorBooksRequest {
-  int64 author_id = 1;
-}
-
-message GetBooksRequest {
-  int32 limit = 1;
-  int32 offset = 2;
 }
 
 message GetBookRequest {
   int64 book_id = 1;
 }
 
-message SearchBooksRequest {
+enum BookSortField {
+  BOOK_SORT_FIELD_UNSPECIFIED = 0;       // => CREATED_AT
+  BOOK_SORT_FIELD_CREATED_AT = 1;        // "Новинки"
+  BOOK_SORT_FIELD_DOWNLOAD_COUNT = 2;    // "Популярное"
+}
+
+message GetBooksRequest {
   string query = 1;
-  int32 limit = 2;
-  int32 offset = 3;
+  // Книги одного автора: author_ids = [7].
+  // Поиск по имени автора: gateway сначала находит id в core-сервисе.
+  repeated int64 author_ids = 2;
+  optional int64 category_id = 3;
+  PageRequest page = 4;
+  BookSortField sort_by = 5;
 }
 
-message GetBooksByParamsRequest {
-  string query = 1;
-  int32 limit = 2;
-  int32 offset = 3;
+message GetBooksResponse {
+  repeated Book books = 1;
+  PageInfo page_info = 2;
 }
 
-
-message FileResponse {
-  int64 id = 1;
-  bool success = 2;
-  string message = 3;
-  string path = 4;
+message UpdateBookRequest {
+  int64 book_id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  optional int64 author_id = 4;
+  optional int64 category_id = 5;
+  optional int64 pdf_file_id = 6;
+  optional int64 cover_file_id = 7;
+  optional string language = 8;
+  optional int32 page_count = 9;
+  optional int32 publication_year = 10;
 }
 
-message GetBookFileRequest {
+message DeleteBookRequest {
+  int64 book_id = 1;
+}
+
+message IncrementDownloadCountRequest {
+  int64 book_id = 1;
+}
+
+message CountBooksByAuthorRequest {
+  int64 author_id = 1;
+}
+
+message CountBooksByCategoryRequest {
+  int64 category_id = 1;
+}
+
+message CountResponse {
+  int64 count = 1;
+}
+
+// 1. CreateUploadURL -> запись в files + ссылка
+// 2. клиент PUT на ссылку -> файл летит прямо в R2
+// 3. CreateBook с полученным file_id
+message CreateUploadURLRequest {
+  FileKind kind = 1;
+  string original_name = 2;
+  int64 size_bytes = 3;      // сервис отклонит слишком большой файл
+}
+
+message UploadURL {
+  int64 file_id = 1;
+  string url = 2;            // сюда HTTP PUT
+}
+
+message GetFileURLRequest {
   int64 file_id = 1;
 }
 
-message GetCoverFileRequest {
-  int64 file_id = 1;
-}
-
-message DownloadFileChunk {
-  bytes content = 1;
-}
-
-message FileChunk {
-  bytes content = 1;
-  string file_name = 2;
-  string original_file_name = 3;
+message FileURL {
+  string url = 1;
+  string original_name = 2;  // имя для "Сохранить как"
 }
 
 message DeleteFileRequest {
   int64 file_id = 1;
-}
-
-message DeleteFileResponse {
-  bool success = 1;
-  string message = 2;
 }
