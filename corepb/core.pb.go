@@ -28,6 +28,7 @@ type CategoryResponse struct {
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     string                 `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	DeletedAt     string                 `protobuf:"bytes,5,opt,name=deleted_at,json=deletedAt,proto3" json:"deleted_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -86,6 +87,13 @@ func (x *CategoryResponse) GetCreatedAt() string {
 func (x *CategoryResponse) GetUpdatedAt() string {
 	if x != nil {
 		return x.UpdatedAt
+	}
+	return ""
+}
+
+func (x *CategoryResponse) GetDeletedAt() string {
+	if x != nil {
+		return x.DeletedAt
 	}
 	return ""
 }
@@ -850,14 +858,16 @@ var File_core_core_proto protoreflect.FileDescriptor
 
 const file_core_core_proto_rawDesc = "" +
 	"\n" +
-	"\x0fcore/core.proto\x12\x04core\"t\n" +
+	"\x0fcore/core.proto\x12\x04core\"\x93\x01\n" +
 	"\x10CategoryResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
 	"created_at\x18\x03 \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\x04 \x01(\tR\tupdatedAt\"\x16\n" +
+	"updated_at\x18\x04 \x01(\tR\tupdatedAt\x12\x1d\n" +
+	"\n" +
+	"deleted_at\x18\x05 \x01(\tR\tdeletedAt\"\x16\n" +
 	"\x14GetCategoriesRequest\"O\n" +
 	"\x15GetCategoriesResponse\x126\n" +
 	"\n" +
