@@ -511,27 +511,27 @@ func (x *GetAuthorsResponse) GetPageInfo() *PageInfo {
 	return nil
 }
 
-type GetAuthorsByIdsRequest struct {
+type GetAuthorsByIDsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AuthorIds     []int64                `protobuf:"varint,1,rep,packed,name=author_ids,json=authorIds,proto3" json:"author_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetAuthorsByIdsRequest) Reset() {
-	*x = GetAuthorsByIdsRequest{}
+func (x *GetAuthorsByIDsRequest) Reset() {
+	*x = GetAuthorsByIDsRequest{}
 	mi := &file_core_core_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetAuthorsByIdsRequest) String() string {
+func (x *GetAuthorsByIDsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetAuthorsByIdsRequest) ProtoMessage() {}
+func (*GetAuthorsByIDsRequest) ProtoMessage() {}
 
-func (x *GetAuthorsByIdsRequest) ProtoReflect() protoreflect.Message {
+func (x *GetAuthorsByIDsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_core_core_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -543,39 +543,39 @@ func (x *GetAuthorsByIdsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetAuthorsByIdsRequest.ProtoReflect.Descriptor instead.
-func (*GetAuthorsByIdsRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetAuthorsByIDsRequest.ProtoReflect.Descriptor instead.
+func (*GetAuthorsByIDsRequest) Descriptor() ([]byte, []int) {
 	return file_core_core_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *GetAuthorsByIdsRequest) GetAuthorIds() []int64 {
+func (x *GetAuthorsByIDsRequest) GetAuthorIds() []int64 {
 	if x != nil {
 		return x.AuthorIds
 	}
 	return nil
 }
 
-type GetAuthorsByIdsResponse struct {
+type GetAuthorsByIDsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Authors       map[int64]*Author      `protobuf:"bytes,1,rep,name=authors,proto3" json:"authors,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetAuthorsByIdsResponse) Reset() {
-	*x = GetAuthorsByIdsResponse{}
+func (x *GetAuthorsByIDsResponse) Reset() {
+	*x = GetAuthorsByIDsResponse{}
 	mi := &file_core_core_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetAuthorsByIdsResponse) String() string {
+func (x *GetAuthorsByIDsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetAuthorsByIdsResponse) ProtoMessage() {}
+func (*GetAuthorsByIDsResponse) ProtoMessage() {}
 
-func (x *GetAuthorsByIdsResponse) ProtoReflect() protoreflect.Message {
+func (x *GetAuthorsByIDsResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_core_core_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -587,12 +587,12 @@ func (x *GetAuthorsByIdsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetAuthorsByIdsResponse.ProtoReflect.Descriptor instead.
-func (*GetAuthorsByIdsResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetAuthorsByIDsResponse.ProtoReflect.Descriptor instead.
+func (*GetAuthorsByIDsResponse) Descriptor() ([]byte, []int) {
 	return file_core_core_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *GetAuthorsByIdsResponse) GetAuthors() map[int64]*Author {
+func (x *GetAuthorsByIDsResponse) GetAuthors() map[int64]*Author {
 	if x != nil {
 		return x.Authors
 	}
@@ -898,7 +898,7 @@ func (x *GetCategoriesResponse) GetPageInfo() *PageInfo {
 type UpdateCategoryRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CategoryId    int64                  `protobuf:"varint,1,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"`
-	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -941,8 +941,8 @@ func (x *UpdateCategoryRequest) GetCategoryId() int64 {
 }
 
 func (x *UpdateCategoryRequest) GetName() string {
-	if x != nil && x.Name != nil {
-		return *x.Name
+	if x != nil {
+		return x.Name
 	}
 	return ""
 }
@@ -1039,11 +1039,11 @@ const file_core_core_proto_rawDesc = "" +
 	"\x12GetAuthorsResponse\x12&\n" +
 	"\aauthors\x18\x01 \x03(\v2\f.core.AuthorR\aauthors\x12+\n" +
 	"\tpage_info\x18\x02 \x01(\v2\x0e.core.PageInfoR\bpageInfo\"7\n" +
-	"\x16GetAuthorsByIdsRequest\x12\x1d\n" +
+	"\x16GetAuthorsByIDsRequest\x12\x1d\n" +
 	"\n" +
 	"author_ids\x18\x01 \x03(\x03R\tauthorIds\"\xa9\x01\n" +
-	"\x17GetAuthorsByIdsResponse\x12D\n" +
-	"\aauthors\x18\x01 \x03(\v2*.core.GetAuthorsByIdsResponse.AuthorsEntryR\aauthors\x1aH\n" +
+	"\x17GetAuthorsByIDsResponse\x12D\n" +
+	"\aauthors\x18\x01 \x03(\v2*.core.GetAuthorsByIDsResponse.AuthorsEntryR\aauthors\x1aH\n" +
 	"\fAuthorsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x03R\x03key\x12\"\n" +
 	"\x05value\x18\x02 \x01(\v2\f.core.AuthorR\x05value:\x028\x01\"\xc6\x01\n" +
@@ -1071,25 +1071,25 @@ const file_core_core_proto_rawDesc = "" +
 	"\n" +
 	"categories\x18\x01 \x03(\v2\x0e.core.CategoryR\n" +
 	"categories\x12+\n" +
-	"\tpage_info\x18\x02 \x01(\v2\x0e.core.PageInfoR\bpageInfo\"Z\n" +
+	"\tpage_info\x18\x02 \x01(\v2\x0e.core.PageInfoR\bpageInfo\"L\n" +
 	"\x15UpdateCategoryRequest\x12\x1f\n" +
 	"\vcategory_id\x18\x01 \x01(\x03R\n" +
-	"categoryId\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x88\x01\x01B\a\n" +
-	"\x05_name\"8\n" +
+	"categoryId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"8\n" +
 	"\x15DeleteCategoryRequest\x12\x1f\n" +
 	"\vcategory_id\x18\x01 \x01(\x03R\n" +
-	"categoryId2\xd0\x05\n" +
+	"categoryId2\xce\x05\n" +
 	"\vCoreService\x127\n" +
 	"\fCreateAuthor\x12\x19.core.CreateAuthorRequest\x1a\f.core.Author\x121\n" +
-	"\tGetAuthor\x12\x16.core.GetAuthorRequest\x1a\f.core.Author\x12@\n" +
-	"\vListAuthors\x12\x17.core.GetAuthorsRequest\x1a\x18.core.GetAuthorsResponse\x127\n" +
+	"\tGetAuthor\x12\x16.core.GetAuthorRequest\x1a\f.core.Author\x12?\n" +
+	"\n" +
+	"GetAuthors\x12\x17.core.GetAuthorsRequest\x1a\x18.core.GetAuthorsResponse\x127\n" +
 	"\fUpdateAuthor\x12\x19.core.UpdateAuthorRequest\x1a\f.core.Author\x12A\n" +
 	"\fDeleteAuthor\x12\x19.core.DeleteAuthorRequest\x1a\x16.google.protobuf.Empty\x12N\n" +
-	"\x0fGetAuthorsByIds\x12\x1c.core.GetAuthorsByIdsRequest\x1a\x1d.core.GetAuthorsByIdsResponse\x12=\n" +
+	"\x0fGetAuthorsByIDs\x12\x1c.core.GetAuthorsByIDsRequest\x1a\x1d.core.GetAuthorsByIDsResponse\x12=\n" +
 	"\x0eCreateCategory\x12\x1b.core.CreateCategoryRequest\x1a\x0e.core.Category\x127\n" +
-	"\vGetCategory\x12\x18.core.GetCategoryRequest\x1a\x0e.core.Category\x12I\n" +
-	"\x0eListCategories\x12\x1a.core.GetCategoriesRequest\x1a\x1b.core.GetCategoriesResponse\x12=\n" +
+	"\vGetCategory\x12\x18.core.GetCategoryRequest\x1a\x0e.core.Category\x12H\n" +
+	"\rGetCategories\x12\x1a.core.GetCategoriesRequest\x1a\x1b.core.GetCategoriesResponse\x12=\n" +
 	"\x0eUpdateCategory\x12\x1b.core.UpdateCategoryRequest\x1a\x0e.core.Category\x12E\n" +
 	"\x0eDeleteCategory\x12\x1b.core.DeleteCategoryRequest\x1a\x16.google.protobuf.EmptyB\tZ\a/corepbb\x06proto3"
 
@@ -1115,8 +1115,8 @@ var file_core_core_proto_goTypes = []any{
 	(*GetAuthorRequest)(nil),        // 5: core.GetAuthorRequest
 	(*GetAuthorsRequest)(nil),       // 6: core.GetAuthorsRequest
 	(*GetAuthorsResponse)(nil),      // 7: core.GetAuthorsResponse
-	(*GetAuthorsByIdsRequest)(nil),  // 8: core.GetAuthorsByIdsRequest
-	(*GetAuthorsByIdsResponse)(nil), // 9: core.GetAuthorsByIdsResponse
+	(*GetAuthorsByIDsRequest)(nil),  // 8: core.GetAuthorsByIDsRequest
+	(*GetAuthorsByIDsResponse)(nil), // 9: core.GetAuthorsByIDsResponse
 	(*UpdateAuthorRequest)(nil),     // 10: core.UpdateAuthorRequest
 	(*DeleteAuthorRequest)(nil),     // 11: core.DeleteAuthorRequest
 	(*CreateCategoryRequest)(nil),   // 12: core.CreateCategoryRequest
@@ -1125,7 +1125,7 @@ var file_core_core_proto_goTypes = []any{
 	(*GetCategoriesResponse)(nil),   // 15: core.GetCategoriesResponse
 	(*UpdateCategoryRequest)(nil),   // 16: core.UpdateCategoryRequest
 	(*DeleteCategoryRequest)(nil),   // 17: core.DeleteCategoryRequest
-	nil,                             // 18: core.GetAuthorsByIdsResponse.AuthorsEntry
+	nil,                             // 18: core.GetAuthorsByIDsResponse.AuthorsEntry
 	(*timestamppb.Timestamp)(nil),   // 19: google.protobuf.Timestamp
 	(*emptypb.Empty)(nil),           // 20: google.protobuf.Empty
 }
@@ -1139,31 +1139,31 @@ var file_core_core_proto_depIdxs = []int32{
 	2,  // 6: core.GetAuthorsRequest.page:type_name -> core.PageRequest
 	0,  // 7: core.GetAuthorsResponse.authors:type_name -> core.Author
 	3,  // 8: core.GetAuthorsResponse.page_info:type_name -> core.PageInfo
-	18, // 9: core.GetAuthorsByIdsResponse.authors:type_name -> core.GetAuthorsByIdsResponse.AuthorsEntry
+	18, // 9: core.GetAuthorsByIDsResponse.authors:type_name -> core.GetAuthorsByIDsResponse.AuthorsEntry
 	2,  // 10: core.GetCategoriesRequest.page:type_name -> core.PageRequest
 	1,  // 11: core.GetCategoriesResponse.categories:type_name -> core.Category
 	3,  // 12: core.GetCategoriesResponse.page_info:type_name -> core.PageInfo
-	0,  // 13: core.GetAuthorsByIdsResponse.AuthorsEntry.value:type_name -> core.Author
+	0,  // 13: core.GetAuthorsByIDsResponse.AuthorsEntry.value:type_name -> core.Author
 	4,  // 14: core.CoreService.CreateAuthor:input_type -> core.CreateAuthorRequest
 	5,  // 15: core.CoreService.GetAuthor:input_type -> core.GetAuthorRequest
-	6,  // 16: core.CoreService.ListAuthors:input_type -> core.GetAuthorsRequest
+	6,  // 16: core.CoreService.GetAuthors:input_type -> core.GetAuthorsRequest
 	10, // 17: core.CoreService.UpdateAuthor:input_type -> core.UpdateAuthorRequest
 	11, // 18: core.CoreService.DeleteAuthor:input_type -> core.DeleteAuthorRequest
-	8,  // 19: core.CoreService.GetAuthorsByIds:input_type -> core.GetAuthorsByIdsRequest
+	8,  // 19: core.CoreService.GetAuthorsByIDs:input_type -> core.GetAuthorsByIDsRequest
 	12, // 20: core.CoreService.CreateCategory:input_type -> core.CreateCategoryRequest
 	13, // 21: core.CoreService.GetCategory:input_type -> core.GetCategoryRequest
-	14, // 22: core.CoreService.ListCategories:input_type -> core.GetCategoriesRequest
+	14, // 22: core.CoreService.GetCategories:input_type -> core.GetCategoriesRequest
 	16, // 23: core.CoreService.UpdateCategory:input_type -> core.UpdateCategoryRequest
 	17, // 24: core.CoreService.DeleteCategory:input_type -> core.DeleteCategoryRequest
 	0,  // 25: core.CoreService.CreateAuthor:output_type -> core.Author
 	0,  // 26: core.CoreService.GetAuthor:output_type -> core.Author
-	7,  // 27: core.CoreService.ListAuthors:output_type -> core.GetAuthorsResponse
+	7,  // 27: core.CoreService.GetAuthors:output_type -> core.GetAuthorsResponse
 	0,  // 28: core.CoreService.UpdateAuthor:output_type -> core.Author
 	20, // 29: core.CoreService.DeleteAuthor:output_type -> google.protobuf.Empty
-	9,  // 30: core.CoreService.GetAuthorsByIds:output_type -> core.GetAuthorsByIdsResponse
+	9,  // 30: core.CoreService.GetAuthorsByIDs:output_type -> core.GetAuthorsByIDsResponse
 	1,  // 31: core.CoreService.CreateCategory:output_type -> core.Category
 	1,  // 32: core.CoreService.GetCategory:output_type -> core.Category
-	15, // 33: core.CoreService.ListCategories:output_type -> core.GetCategoriesResponse
+	15, // 33: core.CoreService.GetCategories:output_type -> core.GetCategoriesResponse
 	1,  // 34: core.CoreService.UpdateCategory:output_type -> core.Category
 	20, // 35: core.CoreService.DeleteCategory:output_type -> google.protobuf.Empty
 	25, // [25:36] is the sub-list for method output_type
@@ -1181,7 +1181,6 @@ func file_core_core_proto_init() {
 	file_core_core_proto_msgTypes[0].OneofWrappers = []any{}
 	file_core_core_proto_msgTypes[1].OneofWrappers = []any{}
 	file_core_core_proto_msgTypes[10].OneofWrappers = []any{}
-	file_core_core_proto_msgTypes[16].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

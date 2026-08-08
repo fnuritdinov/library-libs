@@ -7,13 +7,14 @@
 package bookpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
+
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
 )
 
 const (
@@ -1011,9 +1012,9 @@ func (x *CountResponse) GetCount() int64 {
 // 2. клиент PUT на ссылку -> файл летит прямо в R2
 // 3. CreateBook с полученным file_id
 type CreateUploadURLRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kind          FileKind               `protobuf:"varint,1,opt,name=kind,proto3,enum=book.FileKind" json:"kind,omitempty"`
-	OriginalName  string                 `protobuf:"bytes,2,opt,name=original_name,json=originalName,proto3" json:"original_name,omitempty"`
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	Kind         FileKind               `protobuf:"varint,1,opt,name=kind,proto3,enum=book.FileKind" json:"kind,omitempty"`
+	OriginalName string                 `protobuf:"bytes,2,opt,name=original_name,json=originalName,proto3" json:"original_name,omitempty"`
 	SizeBytes     int64                  `protobuf:"varint,3,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"` // сервис отклонит слишком большой файл
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

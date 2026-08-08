@@ -10,18 +10,18 @@ import "google/protobuf/empty.proto";
 service CoreService {
   rpc CreateAuthor(CreateAuthorRequest) returns (Author);
   rpc GetAuthor(GetAuthorRequest) returns (Author);
-  rpc ListAuthors(GetAuthorsRequest) returns (GetAuthorsResponse);
+  rpc GetAuthors(GetAuthorsRequest) returns (GetAuthorsResponse);
   rpc UpdateAuthor(UpdateAuthorRequest) returns (Author);
   rpc DeleteAuthor(DeleteAuthorRequest) returns (google.protobuf.Empty);
 
   // Нужен gateway: получить сразу несколько авторов по их id,
   // чтобы подставить имена в список книг одним запросом.
-  rpc GetAuthorsByIds(GetAuthorsByIdsRequest) returns (GetAuthorsByIdsResponse);
+  rpc GetAuthorsByIDs(GetAuthorsByIDsRequest) returns (GetAuthorsByIDsResponse);
 
 
   rpc CreateCategory(CreateCategoryRequest) returns (Category);
   rpc GetCategory(GetCategoryRequest) returns (Category);
-  rpc ListCategories(GetCategoriesRequest) returns (GetCategoriesResponse);
+  rpc GetCategories(GetCategoriesRequest) returns (GetCategoriesResponse);
   rpc UpdateCategory(UpdateCategoryRequest) returns (Category);
   rpc DeleteCategory(DeleteCategoryRequest) returns (google.protobuf.Empty);
 }
@@ -76,11 +76,11 @@ message GetAuthorsResponse {
   PageInfo page_info = 2;
 }
 
-message GetAuthorsByIdsRequest {
+message GetAuthorsByIDsRequest {
   repeated int64 author_ids = 1;
 }
 
-message GetAuthorsByIdsResponse {
+message GetAuthorsByIDsResponse {
   map<int64, Author> authors = 1;
 }
 
@@ -116,7 +116,7 @@ message GetCategoriesResponse {
 
 message UpdateCategoryRequest {
   int64 category_id = 1;
-  optional string name = 2;
+  string name = 2;
 }
 
 message DeleteCategoryRequest {

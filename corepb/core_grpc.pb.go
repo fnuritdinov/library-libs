@@ -22,13 +22,13 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	CoreService_CreateAuthor_FullMethodName    = "/core.CoreService/CreateAuthor"
 	CoreService_GetAuthor_FullMethodName       = "/core.CoreService/GetAuthor"
-	CoreService_ListAuthors_FullMethodName     = "/core.CoreService/ListAuthors"
+	CoreService_GetAuthors_FullMethodName      = "/core.CoreService/GetAuthors"
 	CoreService_UpdateAuthor_FullMethodName    = "/core.CoreService/UpdateAuthor"
 	CoreService_DeleteAuthor_FullMethodName    = "/core.CoreService/DeleteAuthor"
-	CoreService_GetAuthorsByIds_FullMethodName = "/core.CoreService/GetAuthorsByIds"
+	CoreService_GetAuthorsByIDs_FullMethodName = "/core.CoreService/GetAuthorsByIDs"
 	CoreService_CreateCategory_FullMethodName  = "/core.CoreService/CreateCategory"
 	CoreService_GetCategory_FullMethodName     = "/core.CoreService/GetCategory"
-	CoreService_ListCategories_FullMethodName  = "/core.CoreService/ListCategories"
+	CoreService_GetCategories_FullMethodName   = "/core.CoreService/GetCategories"
 	CoreService_UpdateCategory_FullMethodName  = "/core.CoreService/UpdateCategory"
 	CoreService_DeleteCategory_FullMethodName  = "/core.CoreService/DeleteCategory"
 )
@@ -39,15 +39,15 @@ const (
 type CoreServiceClient interface {
 	CreateAuthor(ctx context.Context, in *CreateAuthorRequest, opts ...grpc.CallOption) (*Author, error)
 	GetAuthor(ctx context.Context, in *GetAuthorRequest, opts ...grpc.CallOption) (*Author, error)
-	ListAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error)
+	GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error)
 	UpdateAuthor(ctx context.Context, in *UpdateAuthorRequest, opts ...grpc.CallOption) (*Author, error)
 	DeleteAuthor(ctx context.Context, in *DeleteAuthorRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Нужен gateway: получить сразу несколько авторов по их id,
 	// чтобы подставить имена в список книг одним запросом.
-	GetAuthorsByIds(ctx context.Context, in *GetAuthorsByIdsRequest, opts ...grpc.CallOption) (*GetAuthorsByIdsResponse, error)
+	GetAuthorsByIDs(ctx context.Context, in *GetAuthorsByIDsRequest, opts ...grpc.CallOption) (*GetAuthorsByIDsResponse, error)
 	CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*Category, error)
 	GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*Category, error)
-	ListCategories(ctx context.Context, in *GetCategoriesRequest, opts ...grpc.CallOption) (*GetCategoriesResponse, error)
+	GetCategories(ctx context.Context, in *GetCategoriesRequest, opts ...grpc.CallOption) (*GetCategoriesResponse, error)
 	UpdateCategory(ctx context.Context, in *UpdateCategoryRequest, opts ...grpc.CallOption) (*Category, error)
 	DeleteCategory(ctx context.Context, in *DeleteCategoryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -80,10 +80,10 @@ func (c *coreServiceClient) GetAuthor(ctx context.Context, in *GetAuthorRequest,
 	return out, nil
 }
 
-func (c *coreServiceClient) ListAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error) {
+func (c *coreServiceClient) GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetAuthorsResponse)
-	err := c.cc.Invoke(ctx, CoreService_ListAuthors_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, CoreService_GetAuthors_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,10 +110,10 @@ func (c *coreServiceClient) DeleteAuthor(ctx context.Context, in *DeleteAuthorRe
 	return out, nil
 }
 
-func (c *coreServiceClient) GetAuthorsByIds(ctx context.Context, in *GetAuthorsByIdsRequest, opts ...grpc.CallOption) (*GetAuthorsByIdsResponse, error) {
+func (c *coreServiceClient) GetAuthorsByIDs(ctx context.Context, in *GetAuthorsByIDsRequest, opts ...grpc.CallOption) (*GetAuthorsByIDsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetAuthorsByIdsResponse)
-	err := c.cc.Invoke(ctx, CoreService_GetAuthorsByIds_FullMethodName, in, out, cOpts...)
+	out := new(GetAuthorsByIDsResponse)
+	err := c.cc.Invoke(ctx, CoreService_GetAuthorsByIDs_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -140,10 +140,10 @@ func (c *coreServiceClient) GetCategory(ctx context.Context, in *GetCategoryRequ
 	return out, nil
 }
 
-func (c *coreServiceClient) ListCategories(ctx context.Context, in *GetCategoriesRequest, opts ...grpc.CallOption) (*GetCategoriesResponse, error) {
+func (c *coreServiceClient) GetCategories(ctx context.Context, in *GetCategoriesRequest, opts ...grpc.CallOption) (*GetCategoriesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetCategoriesResponse)
-	err := c.cc.Invoke(ctx, CoreService_ListCategories_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, CoreService_GetCategories_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -176,15 +176,15 @@ func (c *coreServiceClient) DeleteCategory(ctx context.Context, in *DeleteCatego
 type CoreServiceServer interface {
 	CreateAuthor(context.Context, *CreateAuthorRequest) (*Author, error)
 	GetAuthor(context.Context, *GetAuthorRequest) (*Author, error)
-	ListAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error)
+	GetAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error)
 	UpdateAuthor(context.Context, *UpdateAuthorRequest) (*Author, error)
 	DeleteAuthor(context.Context, *DeleteAuthorRequest) (*emptypb.Empty, error)
 	// Нужен gateway: получить сразу несколько авторов по их id,
 	// чтобы подставить имена в список книг одним запросом.
-	GetAuthorsByIds(context.Context, *GetAuthorsByIdsRequest) (*GetAuthorsByIdsResponse, error)
+	GetAuthorsByIDs(context.Context, *GetAuthorsByIDsRequest) (*GetAuthorsByIDsResponse, error)
 	CreateCategory(context.Context, *CreateCategoryRequest) (*Category, error)
 	GetCategory(context.Context, *GetCategoryRequest) (*Category, error)
-	ListCategories(context.Context, *GetCategoriesRequest) (*GetCategoriesResponse, error)
+	GetCategories(context.Context, *GetCategoriesRequest) (*GetCategoriesResponse, error)
 	UpdateCategory(context.Context, *UpdateCategoryRequest) (*Category, error)
 	DeleteCategory(context.Context, *DeleteCategoryRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedCoreServiceServer()
@@ -203,8 +203,8 @@ func (UnimplementedCoreServiceServer) CreateAuthor(context.Context, *CreateAutho
 func (UnimplementedCoreServiceServer) GetAuthor(context.Context, *GetAuthorRequest) (*Author, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetAuthor not implemented")
 }
-func (UnimplementedCoreServiceServer) ListAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListAuthors not implemented")
+func (UnimplementedCoreServiceServer) GetAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAuthors not implemented")
 }
 func (UnimplementedCoreServiceServer) UpdateAuthor(context.Context, *UpdateAuthorRequest) (*Author, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateAuthor not implemented")
@@ -212,8 +212,8 @@ func (UnimplementedCoreServiceServer) UpdateAuthor(context.Context, *UpdateAutho
 func (UnimplementedCoreServiceServer) DeleteAuthor(context.Context, *DeleteAuthorRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteAuthor not implemented")
 }
-func (UnimplementedCoreServiceServer) GetAuthorsByIds(context.Context, *GetAuthorsByIdsRequest) (*GetAuthorsByIdsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetAuthorsByIds not implemented")
+func (UnimplementedCoreServiceServer) GetAuthorsByIDs(context.Context, *GetAuthorsByIDsRequest) (*GetAuthorsByIDsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAuthorsByIDs not implemented")
 }
 func (UnimplementedCoreServiceServer) CreateCategory(context.Context, *CreateCategoryRequest) (*Category, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateCategory not implemented")
@@ -221,8 +221,8 @@ func (UnimplementedCoreServiceServer) CreateCategory(context.Context, *CreateCat
 func (UnimplementedCoreServiceServer) GetCategory(context.Context, *GetCategoryRequest) (*Category, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetCategory not implemented")
 }
-func (UnimplementedCoreServiceServer) ListCategories(context.Context, *GetCategoriesRequest) (*GetCategoriesResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListCategories not implemented")
+func (UnimplementedCoreServiceServer) GetCategories(context.Context, *GetCategoriesRequest) (*GetCategoriesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCategories not implemented")
 }
 func (UnimplementedCoreServiceServer) UpdateCategory(context.Context, *UpdateCategoryRequest) (*Category, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateCategory not implemented")
@@ -287,20 +287,20 @@ func _CoreService_GetAuthor_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CoreService_ListAuthors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CoreService_GetAuthors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetAuthorsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CoreServiceServer).ListAuthors(ctx, in)
+		return srv.(CoreServiceServer).GetAuthors(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CoreService_ListAuthors_FullMethodName,
+		FullMethod: CoreService_GetAuthors_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServiceServer).ListAuthors(ctx, req.(*GetAuthorsRequest))
+		return srv.(CoreServiceServer).GetAuthors(ctx, req.(*GetAuthorsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -341,20 +341,20 @@ func _CoreService_DeleteAuthor_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CoreService_GetAuthorsByIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAuthorsByIdsRequest)
+func _CoreService_GetAuthorsByIDs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAuthorsByIDsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CoreServiceServer).GetAuthorsByIds(ctx, in)
+		return srv.(CoreServiceServer).GetAuthorsByIDs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CoreService_GetAuthorsByIds_FullMethodName,
+		FullMethod: CoreService_GetAuthorsByIDs_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServiceServer).GetAuthorsByIds(ctx, req.(*GetAuthorsByIdsRequest))
+		return srv.(CoreServiceServer).GetAuthorsByIDs(ctx, req.(*GetAuthorsByIDsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -395,20 +395,20 @@ func _CoreService_GetCategory_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CoreService_ListCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CoreService_GetCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetCategoriesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CoreServiceServer).ListCategories(ctx, in)
+		return srv.(CoreServiceServer).GetCategories(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CoreService_ListCategories_FullMethodName,
+		FullMethod: CoreService_GetCategories_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoreServiceServer).ListCategories(ctx, req.(*GetCategoriesRequest))
+		return srv.(CoreServiceServer).GetCategories(ctx, req.(*GetCategoriesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -465,8 +465,8 @@ var CoreService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CoreService_GetAuthor_Handler,
 		},
 		{
-			MethodName: "ListAuthors",
-			Handler:    _CoreService_ListAuthors_Handler,
+			MethodName: "GetAuthors",
+			Handler:    _CoreService_GetAuthors_Handler,
 		},
 		{
 			MethodName: "UpdateAuthor",
@@ -477,8 +477,8 @@ var CoreService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CoreService_DeleteAuthor_Handler,
 		},
 		{
-			MethodName: "GetAuthorsByIds",
-			Handler:    _CoreService_GetAuthorsByIds_Handler,
+			MethodName: "GetAuthorsByIDs",
+			Handler:    _CoreService_GetAuthorsByIDs_Handler,
 		},
 		{
 			MethodName: "CreateCategory",
@@ -489,8 +489,8 @@ var CoreService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CoreService_GetCategory_Handler,
 		},
 		{
-			MethodName: "ListCategories",
-			Handler:    _CoreService_ListCategories_Handler,
+			MethodName: "GetCategories",
+			Handler:    _CoreService_GetCategories_Handler,
 		},
 		{
 			MethodName: "UpdateCategory",
