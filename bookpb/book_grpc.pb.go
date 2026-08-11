@@ -32,6 +32,9 @@ const (
 	BookService_CreateUploadURL_FullMethodName        = "/book.BookService/CreateUploadURL"
 	BookService_GetFileURL_FullMethodName             = "/book.BookService/GetFileURL"
 	BookService_DeleteFile_FullMethodName             = "/book.BookService/DeleteFile"
+	BookService_AddFavorite_FullMethodName            = "/book.BookService/AddFavorite"
+	BookService_RemoveFavorite_FullMethodName         = "/book.BookService/RemoveFavorite"
+	BookService_GetFavorites_FullMethodName           = "/book.BookService/GetFavorites"
 )
 
 // BookServiceClient is the client API for BookService service.
@@ -47,10 +50,13 @@ type BookServiceClient interface {
 	// Gateway зовёт перед удалением автора/категории в core-сервисе.
 	CountBooksByAuthor(ctx context.Context, in *CountBooksByAuthorRequest, opts ...grpc.CallOption) (*CountResponse, error)
 	CountBooksByCategory(ctx context.Context, in *CountBooksByCategoryRequest, opts ...grpc.CallOption) (*CountResponse, error)
-	// Байты через gRPC не ходят — только ссылки на R2.
 	CreateUploadURL(ctx context.Context, in *CreateUploadURLRequest, opts ...grpc.CallOption) (*UploadURL, error)
 	GetFileURL(ctx context.Context, in *GetFileURLRequest, opts ...grpc.CallOption) (*FileURL, error)
 	DeleteFile(ctx context.Context, in *DeleteFileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// user_id не в запросах — gateway кладёт его в metadata (x-user-id).
+	AddFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	RemoveFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetFavorites(ctx context.Context, in *GetFavoritesRequest, opts ...grpc.CallOption) (*GetFavoritesResponse, error)
 }
 
 type bookServiceClient struct {
@@ -171,6 +177,36 @@ func (c *bookServiceClient) DeleteFile(ctx context.Context, in *DeleteFileReques
 	return out, nil
 }
 
+func (c *bookServiceClient) AddFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, BookService_AddFavorite_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bookServiceClient) RemoveFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, BookService_RemoveFavorite_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bookServiceClient) GetFavorites(ctx context.Context, in *GetFavoritesRequest, opts ...grpc.CallOption) (*GetFavoritesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetFavoritesResponse)
+	err := c.cc.Invoke(ctx, BookService_GetFavorites_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BookServiceServer is the server API for BookService service.
 // All implementations must embed UnimplementedBookServiceServer
 // for forward compatibility.
@@ -184,10 +220,13 @@ type BookServiceServer interface {
 	// Gateway зовёт перед удалением автора/категории в core-сервисе.
 	CountBooksByAuthor(context.Context, *CountBooksByAuthorRequest) (*CountResponse, error)
 	CountBooksByCategory(context.Context, *CountBooksByCategoryRequest) (*CountResponse, error)
-	// Байты через gRPC не ходят — только ссылки на R2.
 	CreateUploadURL(context.Context, *CreateUploadURLRequest) (*UploadURL, error)
 	GetFileURL(context.Context, *GetFileURLRequest) (*FileURL, error)
 	DeleteFile(context.Context, *DeleteFileRequest) (*emptypb.Empty, error)
+	// user_id не в запросах — gateway кладёт его в metadata (x-user-id).
+	AddFavorite(context.Context, *FavoriteRequest) (*emptypb.Empty, error)
+	RemoveFavorite(context.Context, *FavoriteRequest) (*emptypb.Empty, error)
+	GetFavorites(context.Context, *GetFavoritesRequest) (*GetFavoritesResponse, error)
 	mustEmbedUnimplementedBookServiceServer()
 }
 
@@ -230,6 +269,15 @@ func (UnimplementedBookServiceServer) GetFileURL(context.Context, *GetFileURLReq
 }
 func (UnimplementedBookServiceServer) DeleteFile(context.Context, *DeleteFileRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteFile not implemented")
+}
+func (UnimplementedBookServiceServer) AddFavorite(context.Context, *FavoriteRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method AddFavorite not implemented")
+}
+func (UnimplementedBookServiceServer) RemoveFavorite(context.Context, *FavoriteRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method RemoveFavorite not implemented")
+}
+func (UnimplementedBookServiceServer) GetFavorites(context.Context, *GetFavoritesRequest) (*GetFavoritesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetFavorites not implemented")
 }
 func (UnimplementedBookServiceServer) mustEmbedUnimplementedBookServiceServer() {}
 func (UnimplementedBookServiceServer) testEmbeddedByValue()                     {}
@@ -450,6 +498,60 @@ func _BookService_DeleteFile_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BookService_AddFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FavoriteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookServiceServer).AddFavorite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookService_AddFavorite_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookServiceServer).AddFavorite(ctx, req.(*FavoriteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BookService_RemoveFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FavoriteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookServiceServer).RemoveFavorite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookService_RemoveFavorite_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookServiceServer).RemoveFavorite(ctx, req.(*FavoriteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BookService_GetFavorites_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFavoritesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookServiceServer).GetFavorites(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookService_GetFavorites_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookServiceServer).GetFavorites(ctx, req.(*GetFavoritesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BookService_ServiceDesc is the grpc.ServiceDesc for BookService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -500,6 +602,18 @@ var BookService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteFile",
 			Handler:    _BookService_DeleteFile_Handler,
+		},
+		{
+			MethodName: "AddFavorite",
+			Handler:    _BookService_AddFavorite_Handler,
+		},
+		{
+			MethodName: "RemoveFavorite",
+			Handler:    _BookService_RemoveFavorite_Handler,
+		},
+		{
+			MethodName: "GetFavorites",
+			Handler:    _BookService_GetFavorites_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -17,7 +17,7 @@ type Option struct {
 }
 
 func New(o Option) (*pgxpool.Pool, error) {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s",
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		o.Host, o.Port, o.User, o.Password, o.DBName)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package book;
 
-option go_package = "github.com/fnuritdinov/library-libs/bookpb;bookpb";
+option go_package = "github.com/fnuritdinov/library-libs/bookpb";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -20,10 +20,14 @@ service BookService {
   rpc CountBooksByAuthor(CountBooksByAuthorRequest) returns (CountResponse);
   rpc CountBooksByCategory(CountBooksByCategoryRequest) returns (CountResponse);
 
-  // Байты через gRPC не ходят — только ссылки на R2.
   rpc CreateUploadURL(CreateUploadURLRequest) returns (UploadURL);
   rpc GetFileURL(GetFileURLRequest) returns (FileURL);
   rpc DeleteFile(DeleteFileRequest) returns (google.protobuf.Empty);
+
+  // user_id не в запросах — gateway кладёт его в metadata (x-user-id).
+  rpc AddFavorite(FavoriteRequest) returns (google.protobuf.Empty);
+  rpc RemoveFavorite(FavoriteRequest) returns (google.protobuf.Empty);
+  rpc GetFavorites(GetFavoritesRequest) returns (GetFavoritesResponse);
 }
 
 message Book {
@@ -42,12 +46,7 @@ message Book {
   google.protobuf.Timestamp updated_at = 13;
   optional google.protobuf.Timestamp deleted_at = 14;
   optional string cover_url = 15;   // готовый URL для <img src>
-}
-
-enum FileKind {
-  FILE_KIND_UNSPECIFIED = 0;
-  FILE_KIND_PDF = 1;
-  FILE_KIND_COVER = 2;
+  optional bool is_favorite = 16;   // не заполняется для анонимных запросов
 }
 
 message PageRequest {
@@ -132,12 +131,13 @@ message CountResponse {
 }
 
 // 1. CreateUploadURL -> запись в files + ссылка
-// 2. клиент PUT на ссылку -> файл летит прямо в R2
+// 2. клиент PUT на ссылку -> файл летит в хранилище мимо сервиса
 // 3. CreateBook с полученным file_id
+//
+// Тип файла определяется по расширению original_name:
+// .pdf -> книга, .jpg/.jpeg/.png -> обложка. Остальное сервис отклоняет.
 message CreateUploadURLRequest {
-  FileKind kind = 1;
-  string original_name = 2;
-  int64 size_bytes = 3;      // сервис отклонит слишком большой файл
+  string original_name = 1;
 }
 
 message UploadURL {
@@ -156,4 +156,17 @@ message FileURL {
 
 message DeleteFileRequest {
   int64 file_id = 1;
+}
+
+message FavoriteRequest {
+  int64 book_id = 1;
+}
+
+message GetFavoritesRequest {
+  PageRequest page = 1;
+}
+
+message GetFavoritesResponse {
+  repeated Book books = 1;
+  PageInfo page_info = 2;
 }
