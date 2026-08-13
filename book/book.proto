@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package book;
 
-option go_package = "github.com/fnuritdinov/library-libs/bookpb";
+option go_package = "/bookpb";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -20,9 +20,8 @@ service BookService {
   rpc CountBooksByAuthor(CountBooksByAuthorRequest) returns (CountResponse);
   rpc CountBooksByCategory(CountBooksByCategoryRequest) returns (CountResponse);
 
+  // Байты через gRPC не ходят: сервис выдаёт ссылку, клиент льёт файл сам.
   rpc CreateUploadURL(CreateUploadURLRequest) returns (UploadURL);
-  rpc GetFileURL(GetFileURLRequest) returns (FileURL);
-  rpc DeleteFile(DeleteFileRequest) returns (google.protobuf.Empty);
 
   // user_id не в запросах — gateway кладёт его в metadata (x-user-id).
   rpc AddFavorite(FavoriteRequest) returns (google.protobuf.Empty);
@@ -36,17 +35,16 @@ message Book {
   string description = 3;
   int64 author_id = 4;
   int64 category_id = 5;
-  optional int64 pdf_file_id = 6;
-  optional int64 cover_file_id = 7;
-  string language = 8;
-  int32 page_count = 9;
-  int32 publication_year = 10;
-  int64 download_count = 11;
-  google.protobuf.Timestamp created_at = 12;
-  google.protobuf.Timestamp updated_at = 13;
-  optional google.protobuf.Timestamp deleted_at = 14;
-  optional string cover_url = 15;   // готовый URL для <img src>
-  optional bool is_favorite = 16;   // не заполняется для анонимных запросов
+  string language = 6;
+  int32 page_count = 7;
+  int32 publication_year = 8;
+  int64 download_count = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  optional google.protobuf.Timestamp deleted_at = 12;
+  optional string cover_url = 13;   // для <img src>
+  optional string pdf_url = 14;     // прямое скачивание
+  optional bool is_favorite = 15;
 }
 
 message PageRequest {
@@ -65,11 +63,11 @@ message CreateBookRequest {
   string description = 2;
   int64 author_id = 3;
   int64 category_id = 4;
-  optional int64 pdf_file_id = 5;
-  optional int64 cover_file_id = 6;
-  string language = 7;
-  int32 page_count = 8;
-  int32 publication_year = 9;
+  string language = 5;
+  int32 page_count = 6;
+  int32 publication_year = 7;
+  optional string pdf_key = 8;      // из UploadURL.key
+  optional string cover_key = 9;
 }
 
 message GetBookRequest {
@@ -103,11 +101,11 @@ message UpdateBookRequest {
   optional string description = 3;
   optional int64 author_id = 4;
   optional int64 category_id = 5;
-  optional int64 pdf_file_id = 6;
-  optional int64 cover_file_id = 7;
-  optional string language = 8;
-  optional int32 page_count = 9;
-  optional int32 publication_year = 10;
+  optional string language = 6;
+  optional int32 page_count = 7;
+  optional int32 publication_year = 8;
+  optional string pdf_key = 9;
+  optional string cover_key = 10;
 }
 
 message DeleteBookRequest {
@@ -130,9 +128,9 @@ message CountResponse {
   int64 count = 1;
 }
 
-// 1. CreateUploadURL -> запись в files + ссылка
-// 2. клиент PUT на ссылку -> файл летит в хранилище мимо сервиса
-// 3. CreateBook с полученным file_id
+// 1. CreateUploadURL -> ключ + ссылка для загрузки
+// 2. клиент PUT на upload_url -> файл летит в хранилище мимо сервиса
+// 3. CreateBook с полученным key
 //
 // Тип файла определяется по расширению original_name:
 // .pdf -> книга, .jpg/.jpeg/.png -> обложка. Остальное сервис отклоняет.
@@ -141,21 +139,8 @@ message CreateUploadURLRequest {
 }
 
 message UploadURL {
-  int64 file_id = 1;
-  string url = 2;            // сюда HTTP PUT
-}
-
-message GetFileURLRequest {
-  int64 file_id = 1;
-}
-
-message FileURL {
-  string url = 1;
-  string original_name = 2;  // имя для "Сохранить как"
-}
-
-message DeleteFileRequest {
-  int64 file_id = 1;
+  string key = 1;            // это уйдёт в CreateBook
+  string upload_url = 2;     // сюда HTTP PUT
 }
 
 message FavoriteRequest {

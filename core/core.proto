@@ -28,12 +28,11 @@ service CoreService {
 
 message Author {
   int64 id = 1;
-  string first_name = 2;
-  string last_name = 3;
-  string biography = 4;
-  google.protobuf.Timestamp created_at = 5;
-  google.protobuf.Timestamp updated_at = 6;
-  optional google.protobuf.Timestamp deleted_at = 7;
+  string full_name = 2;
+  string biography = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  optional google.protobuf.Timestamp deleted_at = 6;
 }
 
 message Category {
@@ -51,15 +50,14 @@ message PageRequest {
 }
 
 message PageInfo {
-  int64 total = 1;   // всего записей — нужно фронту для "стр. 3 из 47"
+  int64 total = 1;
   int32 limit = 2;
   int32 offset = 3;
 }
 
 message CreateAuthorRequest {
-  string first_name = 1;
-  string last_name = 2;
-  string biography = 3;
+  string full_name = 1;
+  string biography = 2;
 }
 
 message GetAuthorRequest {
@@ -86,9 +84,8 @@ message GetAuthorsByIDsResponse {
 
 message UpdateAuthorRequest {
   int64 author_id = 1;
-  optional string first_name = 2;
-  optional string last_name = 3;
-  optional string biography = 4;
+  optional string full_name = 2;
+  optional string biography = 3;
 }
 
 message DeleteAuthorRequest {
@@ -107,6 +104,7 @@ message GetCategoryRequest {
 
 message GetCategoriesRequest {
   PageRequest page = 1;
+  string query = 2;
 }
 
 message GetCategoriesResponse {

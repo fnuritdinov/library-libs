@@ -5,8 +5,9 @@ import (
 )
 
 var (
-	ErrNotFound     = errors.New("not found")
-	ErrInvalidID    = errors.New("invalid ID")
-	ErrAlreadyExist = errors.New("already exist")
-	ErrInvalidInput = errors.New("invalid input")
+	ErrNotFound       = errors.New("not found")
+	ErrInvalidID      = errors.New("invalid ID")
+	ErrAlreadyExist   = errors.New("already exist")
+	ErrInvalidInput   = errors.New("invalid input")
+	ErrInvalidRequest = errors.New("invalid request")
 )

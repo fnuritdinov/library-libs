@@ -26,12 +26,11 @@ const (
 type Author struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	FirstName     string                 `protobuf:"bytes,2,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName      string                 `protobuf:"bytes,3,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Biography     string                 `protobuf:"bytes,4,opt,name=biography,proto3" json:"biography,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`
+	FullName      string                 `protobuf:"bytes,2,opt,name=full_name,json=fullName,proto3" json:"full_name,omitempty"`
+	Biography     string                 `protobuf:"bytes,3,opt,name=biography,proto3" json:"biography,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -73,16 +72,9 @@ func (x *Author) GetId() int64 {
 	return 0
 }
 
-func (x *Author) GetFirstName() string {
+func (x *Author) GetFullName() string {
 	if x != nil {
-		return x.FirstName
-	}
-	return ""
-}
-
-func (x *Author) GetLastName() string {
-	if x != nil {
-		return x.LastName
+		return x.FullName
 	}
 	return ""
 }
@@ -305,9 +297,8 @@ func (x *PageInfo) GetOffset() int32 {
 
 type CreateAuthorRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	FirstName     string                 `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName      string                 `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Biography     string                 `protobuf:"bytes,3,opt,name=biography,proto3" json:"biography,omitempty"`
+	FullName      string                 `protobuf:"bytes,1,opt,name=full_name,json=fullName,proto3" json:"full_name,omitempty"`
+	Biography     string                 `protobuf:"bytes,2,opt,name=biography,proto3" json:"biography,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -342,16 +333,9 @@ func (*CreateAuthorRequest) Descriptor() ([]byte, []int) {
 	return file_core_core_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *CreateAuthorRequest) GetFirstName() string {
+func (x *CreateAuthorRequest) GetFullName() string {
 	if x != nil {
-		return x.FirstName
-	}
-	return ""
-}
-
-func (x *CreateAuthorRequest) GetLastName() string {
-	if x != nil {
-		return x.LastName
+		return x.FullName
 	}
 	return ""
 }
@@ -602,9 +586,8 @@ func (x *GetAuthorsByIDsResponse) GetAuthors() map[int64]*Author {
 type UpdateAuthorRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AuthorId      int64                  `protobuf:"varint,1,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty"`
-	FirstName     *string                `protobuf:"bytes,2,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
-	LastName      *string                `protobuf:"bytes,3,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
-	Biography     *string                `protobuf:"bytes,4,opt,name=biography,proto3,oneof" json:"biography,omitempty"`
+	FullName      *string                `protobuf:"bytes,2,opt,name=full_name,json=fullName,proto3,oneof" json:"full_name,omitempty"`
+	Biography     *string                `protobuf:"bytes,3,opt,name=biography,proto3,oneof" json:"biography,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -646,16 +629,9 @@ func (x *UpdateAuthorRequest) GetAuthorId() int64 {
 	return 0
 }
 
-func (x *UpdateAuthorRequest) GetFirstName() string {
-	if x != nil && x.FirstName != nil {
-		return *x.FirstName
-	}
-	return ""
-}
-
-func (x *UpdateAuthorRequest) GetLastName() string {
-	if x != nil && x.LastName != nil {
-		return *x.LastName
+func (x *UpdateAuthorRequest) GetFullName() string {
+	if x != nil && x.FullName != nil {
+		return *x.FullName
 	}
 	return ""
 }
@@ -802,6 +778,7 @@ func (x *GetCategoryRequest) GetCategoryId() int64 {
 type GetCategoriesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Page          *PageRequest           `protobuf:"bytes,1,opt,name=page,proto3" json:"page,omitempty"`
+	Query         string                 `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -841,6 +818,13 @@ func (x *GetCategoriesRequest) GetPage() *PageRequest {
 		return x.Page
 	}
 	return nil
+}
+
+func (x *GetCategoriesRequest) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
 }
 
 type GetCategoriesResponse struct {
@@ -995,19 +979,17 @@ var File_core_core_proto protoreflect.FileDescriptor
 
 const file_core_core_proto_rawDesc = "" +
 	"\n" +
-	"\x0fcore/core.proto\x12\x04core\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xb7\x02\n" +
+	"\x0fcore/core.proto\x12\x04core\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x98\x02\n" +
 	"\x06Author\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1b\n" +
+	"\tfull_name\x18\x02 \x01(\tR\bfullName\x12\x1c\n" +
+	"\tbiography\x18\x03 \x01(\tR\tbiography\x129\n" +
 	"\n" +
-	"first_name\x18\x02 \x01(\tR\tfirstName\x12\x1b\n" +
-	"\tlast_name\x18\x03 \x01(\tR\blastName\x12\x1c\n" +
-	"\tbiography\x18\x04 \x01(\tR\tbiography\x129\n" +
+	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12>\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12>\n" +
-	"\n" +
-	"deleted_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x00R\tdeletedAt\x88\x01\x01B\r\n" +
+	"deleted_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\tdeletedAt\x88\x01\x01B\r\n" +
 	"\v_deleted_at\"\xf3\x01\n" +
 	"\bCategory\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
@@ -1025,12 +1007,10 @@ const file_core_core_proto_rawDesc = "" +
 	"\bPageInfo\x12\x14\n" +
 	"\x05total\x18\x01 \x01(\x03R\x05total\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x03 \x01(\x05R\x06offset\"o\n" +
-	"\x13CreateAuthorRequest\x12\x1d\n" +
-	"\n" +
-	"first_name\x18\x01 \x01(\tR\tfirstName\x12\x1b\n" +
-	"\tlast_name\x18\x02 \x01(\tR\blastName\x12\x1c\n" +
-	"\tbiography\x18\x03 \x01(\tR\tbiography\"/\n" +
+	"\x06offset\x18\x03 \x01(\x05R\x06offset\"P\n" +
+	"\x13CreateAuthorRequest\x12\x1b\n" +
+	"\tfull_name\x18\x01 \x01(\tR\bfullName\x12\x1c\n" +
+	"\tbiography\x18\x02 \x01(\tR\tbiography\"/\n" +
 	"\x10GetAuthorRequest\x12\x1b\n" +
 	"\tauthor_id\x18\x01 \x01(\x03R\bauthorId\"P\n" +
 	"\x11GetAuthorsRequest\x12%\n" +
@@ -1046,16 +1026,13 @@ const file_core_core_proto_rawDesc = "" +
 	"\aauthors\x18\x01 \x03(\v2*.core.GetAuthorsByIDsResponse.AuthorsEntryR\aauthors\x1aH\n" +
 	"\fAuthorsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x03R\x03key\x12\"\n" +
-	"\x05value\x18\x02 \x01(\v2\f.core.AuthorR\x05value:\x028\x01\"\xc6\x01\n" +
+	"\x05value\x18\x02 \x01(\v2\f.core.AuthorR\x05value:\x028\x01\"\x93\x01\n" +
 	"\x13UpdateAuthorRequest\x12\x1b\n" +
-	"\tauthor_id\x18\x01 \x01(\x03R\bauthorId\x12\"\n" +
+	"\tauthor_id\x18\x01 \x01(\x03R\bauthorId\x12 \n" +
+	"\tfull_name\x18\x02 \x01(\tH\x00R\bfullName\x88\x01\x01\x12!\n" +
+	"\tbiography\x18\x03 \x01(\tH\x01R\tbiography\x88\x01\x01B\f\n" +
 	"\n" +
-	"first_name\x18\x02 \x01(\tH\x00R\tfirstName\x88\x01\x01\x12 \n" +
-	"\tlast_name\x18\x03 \x01(\tH\x01R\blastName\x88\x01\x01\x12!\n" +
-	"\tbiography\x18\x04 \x01(\tH\x02R\tbiography\x88\x01\x01B\r\n" +
-	"\v_first_nameB\f\n" +
-	"\n" +
-	"_last_nameB\f\n" +
+	"_full_nameB\f\n" +
 	"\n" +
 	"_biography\"2\n" +
 	"\x13DeleteAuthorRequest\x12\x1b\n" +
@@ -1064,9 +1041,10 @@ const file_core_core_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"5\n" +
 	"\x12GetCategoryRequest\x12\x1f\n" +
 	"\vcategory_id\x18\x01 \x01(\x03R\n" +
-	"categoryId\"=\n" +
+	"categoryId\"S\n" +
 	"\x14GetCategoriesRequest\x12%\n" +
-	"\x04page\x18\x01 \x01(\v2\x11.core.PageRequestR\x04page\"t\n" +
+	"\x04page\x18\x01 \x01(\v2\x11.core.PageRequestR\x04page\x12\x14\n" +
+	"\x05query\x18\x02 \x01(\tR\x05query\"t\n" +
 	"\x15GetCategoriesResponse\x12.\n" +
 	"\n" +
 	"categories\x18\x01 \x03(\v2\x0e.core.CategoryR\n" +

@@ -8,7 +8,6 @@ package bookpb
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -30,8 +29,6 @@ const (
 	BookService_CountBooksByAuthor_FullMethodName     = "/book.BookService/CountBooksByAuthor"
 	BookService_CountBooksByCategory_FullMethodName   = "/book.BookService/CountBooksByCategory"
 	BookService_CreateUploadURL_FullMethodName        = "/book.BookService/CreateUploadURL"
-	BookService_GetFileURL_FullMethodName             = "/book.BookService/GetFileURL"
-	BookService_DeleteFile_FullMethodName             = "/book.BookService/DeleteFile"
 	BookService_AddFavorite_FullMethodName            = "/book.BookService/AddFavorite"
 	BookService_RemoveFavorite_FullMethodName         = "/book.BookService/RemoveFavorite"
 	BookService_GetFavorites_FullMethodName           = "/book.BookService/GetFavorites"
@@ -50,9 +47,8 @@ type BookServiceClient interface {
 	// Gateway зовёт перед удалением автора/категории в core-сервисе.
 	CountBooksByAuthor(ctx context.Context, in *CountBooksByAuthorRequest, opts ...grpc.CallOption) (*CountResponse, error)
 	CountBooksByCategory(ctx context.Context, in *CountBooksByCategoryRequest, opts ...grpc.CallOption) (*CountResponse, error)
+	// Байты через gRPC не ходят: сервис выдаёт ссылку, клиент льёт файл сам.
 	CreateUploadURL(ctx context.Context, in *CreateUploadURLRequest, opts ...grpc.CallOption) (*UploadURL, error)
-	GetFileURL(ctx context.Context, in *GetFileURLRequest, opts ...grpc.CallOption) (*FileURL, error)
-	DeleteFile(ctx context.Context, in *DeleteFileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// user_id не в запросах — gateway кладёт его в metadata (x-user-id).
 	AddFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	RemoveFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -157,26 +153,6 @@ func (c *bookServiceClient) CreateUploadURL(ctx context.Context, in *CreateUploa
 	return out, nil
 }
 
-func (c *bookServiceClient) GetFileURL(ctx context.Context, in *GetFileURLRequest, opts ...grpc.CallOption) (*FileURL, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FileURL)
-	err := c.cc.Invoke(ctx, BookService_GetFileURL_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *bookServiceClient) DeleteFile(ctx context.Context, in *DeleteFileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, BookService_DeleteFile_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *bookServiceClient) AddFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -220,9 +196,8 @@ type BookServiceServer interface {
 	// Gateway зовёт перед удалением автора/категории в core-сервисе.
 	CountBooksByAuthor(context.Context, *CountBooksByAuthorRequest) (*CountResponse, error)
 	CountBooksByCategory(context.Context, *CountBooksByCategoryRequest) (*CountResponse, error)
+	// Байты через gRPC не ходят: сервис выдаёт ссылку, клиент льёт файл сам.
 	CreateUploadURL(context.Context, *CreateUploadURLRequest) (*UploadURL, error)
-	GetFileURL(context.Context, *GetFileURLRequest) (*FileURL, error)
-	DeleteFile(context.Context, *DeleteFileRequest) (*emptypb.Empty, error)
 	// user_id не в запросах — gateway кладёт его в metadata (x-user-id).
 	AddFavorite(context.Context, *FavoriteRequest) (*emptypb.Empty, error)
 	RemoveFavorite(context.Context, *FavoriteRequest) (*emptypb.Empty, error)
@@ -263,12 +238,6 @@ func (UnimplementedBookServiceServer) CountBooksByCategory(context.Context, *Cou
 }
 func (UnimplementedBookServiceServer) CreateUploadURL(context.Context, *CreateUploadURLRequest) (*UploadURL, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateUploadURL not implemented")
-}
-func (UnimplementedBookServiceServer) GetFileURL(context.Context, *GetFileURLRequest) (*FileURL, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetFileURL not implemented")
-}
-func (UnimplementedBookServiceServer) DeleteFile(context.Context, *DeleteFileRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteFile not implemented")
 }
 func (UnimplementedBookServiceServer) AddFavorite(context.Context, *FavoriteRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method AddFavorite not implemented")
@@ -462,42 +431,6 @@ func _BookService_CreateUploadURL_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BookService_GetFileURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetFileURLRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BookServiceServer).GetFileURL(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: BookService_GetFileURL_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookServiceServer).GetFileURL(ctx, req.(*GetFileURLRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _BookService_DeleteFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteFileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BookServiceServer).DeleteFile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: BookService_DeleteFile_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookServiceServer).DeleteFile(ctx, req.(*DeleteFileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _BookService_AddFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FavoriteRequest)
 	if err := dec(in); err != nil {
@@ -594,14 +527,6 @@ var BookService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateUploadURL",
 			Handler:    _BookService_CreateUploadURL_Handler,
-		},
-		{
-			MethodName: "GetFileURL",
-			Handler:    _BookService_GetFileURL_Handler,
-		},
-		{
-			MethodName: "DeleteFile",
-			Handler:    _BookService_DeleteFile_Handler,
 		},
 		{
 			MethodName: "AddFavorite",
