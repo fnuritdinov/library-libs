@@ -86,9 +86,9 @@ type Book struct {
 	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt       *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	DeletedAt       *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`
-	CoverUrl        *string                `protobuf:"bytes,13,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"`        // для <img src>
-	PdfUrl          *string                `protobuf:"bytes,14,opt,name=pdf_url,json=pdfUrl,proto3,oneof" json:"pdf_url,omitempty"`              // прямое скачивание
-	IsFavorite      *bool                  `protobuf:"varint,15,opt,name=is_favorite,json=isFavorite,proto3,oneof" json:"is_favorite,omitempty"` // не заполняется для анонимных запросов
+	CoverUrl        *string                `protobuf:"bytes,13,opt,name=cover_url,json=coverUrl,proto3,oneof" json:"cover_url,omitempty"` // для <img src>
+	PdfUrl          *string                `protobuf:"bytes,14,opt,name=pdf_url,json=pdfUrl,proto3,oneof" json:"pdf_url,omitempty"`       // прямое скачивание
+	IsFavorite      *bool                  `protobuf:"varint,15,opt,name=is_favorite,json=isFavorite,proto3,oneof" json:"is_favorite,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -1151,7 +1151,6 @@ func (x *GetFavoritesRequest) GetPage() *PageRequest {
 type GetFavoritesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Books         []*Book                `protobuf:"bytes,1,rep,name=books,proto3" json:"books,omitempty"`
-	PageInfo      *PageInfo              `protobuf:"bytes,2,opt,name=page_info,json=pageInfo,proto3" json:"page_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1189,13 +1188,6 @@ func (*GetFavoritesResponse) Descriptor() ([]byte, []int) {
 func (x *GetFavoritesResponse) GetBooks() []*Book {
 	if x != nil {
 		return x.Books
-	}
-	return nil
-}
-
-func (x *GetFavoritesResponse) GetPageInfo() *PageInfo {
-	if x != nil {
-		return x.PageInfo
 	}
 	return nil
 }
@@ -1318,11 +1310,10 @@ const file_book_book_proto_rawDesc = "" +
 	"\x0fFavoriteRequest\x12\x17\n" +
 	"\abook_id\x18\x01 \x01(\x03R\x06bookId\"<\n" +
 	"\x13GetFavoritesRequest\x12%\n" +
-	"\x04page\x18\x01 \x01(\v2\x11.book.PageRequestR\x04page\"e\n" +
+	"\x04page\x18\x01 \x01(\v2\x11.book.PageRequestR\x04page\"8\n" +
 	"\x14GetFavoritesResponse\x12 \n" +
 	"\x05books\x18\x01 \x03(\v2\n" +
-	".book.BookR\x05books\x12+\n" +
-	"\tpage_info\x18\x02 \x01(\v2\x0e.book.PageInfoR\bpageInfo*t\n" +
+	".book.BookR\x05books*t\n" +
 	"\rBookSortField\x12\x1f\n" +
 	"\x1bBOOK_SORT_FIELD_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aBOOK_SORT_FIELD_CREATED_AT\x10\x01\x12\"\n" +
@@ -1394,36 +1385,35 @@ var file_book_book_proto_depIdxs = []int32{
 	3,  // 6: book.GetBooksResponse.page_info:type_name -> book.PageInfo
 	2,  // 7: book.GetFavoritesRequest.page:type_name -> book.PageRequest
 	1,  // 8: book.GetFavoritesResponse.books:type_name -> book.Book
-	3,  // 9: book.GetFavoritesResponse.page_info:type_name -> book.PageInfo
-	4,  // 10: book.BookService.CreateBook:input_type -> book.CreateBookRequest
-	5,  // 11: book.BookService.GetBook:input_type -> book.GetBookRequest
-	6,  // 12: book.BookService.GetBooks:input_type -> book.GetBooksRequest
-	8,  // 13: book.BookService.UpdateBook:input_type -> book.UpdateBookRequest
-	9,  // 14: book.BookService.DeleteBook:input_type -> book.DeleteBookRequest
-	10, // 15: book.BookService.IncrementDownloadCount:input_type -> book.IncrementDownloadCountRequest
-	11, // 16: book.BookService.CountBooksByAuthor:input_type -> book.CountBooksByAuthorRequest
-	12, // 17: book.BookService.CountBooksByCategory:input_type -> book.CountBooksByCategoryRequest
-	14, // 18: book.BookService.CreateUploadURL:input_type -> book.CreateUploadURLRequest
-	16, // 19: book.BookService.AddFavorite:input_type -> book.FavoriteRequest
-	16, // 20: book.BookService.RemoveFavorite:input_type -> book.FavoriteRequest
-	17, // 21: book.BookService.GetFavorites:input_type -> book.GetFavoritesRequest
-	1,  // 22: book.BookService.CreateBook:output_type -> book.Book
-	1,  // 23: book.BookService.GetBook:output_type -> book.Book
-	7,  // 24: book.BookService.GetBooks:output_type -> book.GetBooksResponse
-	1,  // 25: book.BookService.UpdateBook:output_type -> book.Book
-	20, // 26: book.BookService.DeleteBook:output_type -> google.protobuf.Empty
-	20, // 27: book.BookService.IncrementDownloadCount:output_type -> google.protobuf.Empty
-	13, // 28: book.BookService.CountBooksByAuthor:output_type -> book.CountResponse
-	13, // 29: book.BookService.CountBooksByCategory:output_type -> book.CountResponse
-	15, // 30: book.BookService.CreateUploadURL:output_type -> book.UploadURL
-	20, // 31: book.BookService.AddFavorite:output_type -> google.protobuf.Empty
-	20, // 32: book.BookService.RemoveFavorite:output_type -> google.protobuf.Empty
-	18, // 33: book.BookService.GetFavorites:output_type -> book.GetFavoritesResponse
-	22, // [22:34] is the sub-list for method output_type
-	10, // [10:22] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	4,  // 9: book.BookService.CreateBook:input_type -> book.CreateBookRequest
+	5,  // 10: book.BookService.GetBook:input_type -> book.GetBookRequest
+	6,  // 11: book.BookService.GetBooks:input_type -> book.GetBooksRequest
+	8,  // 12: book.BookService.UpdateBook:input_type -> book.UpdateBookRequest
+	9,  // 13: book.BookService.DeleteBook:input_type -> book.DeleteBookRequest
+	10, // 14: book.BookService.IncrementDownloadCount:input_type -> book.IncrementDownloadCountRequest
+	11, // 15: book.BookService.CountBooksByAuthor:input_type -> book.CountBooksByAuthorRequest
+	12, // 16: book.BookService.CountBooksByCategory:input_type -> book.CountBooksByCategoryRequest
+	14, // 17: book.BookService.CreateUploadURL:input_type -> book.CreateUploadURLRequest
+	16, // 18: book.BookService.AddFavorite:input_type -> book.FavoriteRequest
+	16, // 19: book.BookService.RemoveFavorite:input_type -> book.FavoriteRequest
+	17, // 20: book.BookService.GetFavorites:input_type -> book.GetFavoritesRequest
+	1,  // 21: book.BookService.CreateBook:output_type -> book.Book
+	1,  // 22: book.BookService.GetBook:output_type -> book.Book
+	7,  // 23: book.BookService.GetBooks:output_type -> book.GetBooksResponse
+	1,  // 24: book.BookService.UpdateBook:output_type -> book.Book
+	20, // 25: book.BookService.DeleteBook:output_type -> google.protobuf.Empty
+	20, // 26: book.BookService.IncrementDownloadCount:output_type -> google.protobuf.Empty
+	13, // 27: book.BookService.CountBooksByAuthor:output_type -> book.CountResponse
+	13, // 28: book.BookService.CountBooksByCategory:output_type -> book.CountResponse
+	15, // 29: book.BookService.CreateUploadURL:output_type -> book.UploadURL
+	20, // 30: book.BookService.AddFavorite:output_type -> google.protobuf.Empty
+	20, // 31: book.BookService.RemoveFavorite:output_type -> google.protobuf.Empty
+	18, // 32: book.BookService.GetFavorites:output_type -> book.GetFavoritesResponse
+	21, // [21:33] is the sub-list for method output_type
+	9,  // [9:21] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_book_book_proto_init() }

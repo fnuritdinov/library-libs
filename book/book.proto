@@ -153,5 +153,4 @@ message GetFavoritesRequest {
 
 message GetFavoritesResponse {
   repeated Book books = 1;
-  PageInfo page_info = 2;
 }
