@@ -52,12 +52,6 @@ message PageRequest {
   int32 offset = 2;
 }
 
-message PageInfo {
-  int64 total = 1;           // для "страница 3 из 47"
-  int32 limit = 2;
-  int32 offset = 3;
-}
-
 message CreateBookRequest {
   string title = 1;
   string description = 2;
@@ -92,7 +86,6 @@ message GetBooksRequest {
 
 message GetBooksResponse {
   repeated Book books = 1;
-  PageInfo page_info = 2;
 }
 
 message UpdateBookRequest {
