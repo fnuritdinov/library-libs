@@ -20,8 +20,9 @@ service BookService {
   rpc CountBooksByAuthor(CountBooksByAuthorRequest) returns (CountResponse);
   rpc CountBooksByCategory(CountBooksByCategoryRequest) returns (CountResponse);
 
-  // Байты через gRPC не ходят: сервис выдаёт ссылку, клиент льёт файл сам.
-  rpc CreateUploadURL(CreateUploadURLRequest) returns (UploadURL);
+  // Файл приходит потоком: первое сообщение — имя, дальше куски.
+  // Сервис кладёт его в хранилище и возвращает key для CreateBook.
+  rpc UploadFile(stream UploadFileRequest) returns (UploadFileResponse);
 
   // user_id не в запросах — gateway кладёт его в metadata (x-user-id).
   rpc AddFavorite(FavoriteRequest) returns (google.protobuf.Empty);
@@ -60,7 +61,7 @@ message CreateBookRequest {
   string language = 5;
   int32 page_count = 6;
   int32 publication_year = 7;
-  optional string pdf_key = 8;      // из UploadURL.key
+  optional string pdf_key = 8;      // из UploadFileResponse.key
   optional string cover_key = 9;
 }
 
@@ -121,21 +122,6 @@ message CountResponse {
   int64 count = 1;
 }
 
-// 1. CreateUploadURL -> ключ + ссылка для загрузки
-// 2. клиент PUT на upload_url -> файл летит в хранилище мимо сервиса
-// 3. CreateBook с полученным key
-//
-// Тип файла определяется по расширению original_name:
-// .pdf -> книга, .jpg/.jpeg/.png -> обложка. Остальное сервис отклоняет.
-message CreateUploadURLRequest {
-  string original_name = 1;
-}
-
-message UploadURL {
-  string key = 1;            // это уйдёт в CreateBook
-  string upload_url = 2;     // сюда HTTP PUT
-}
-
 message FavoriteRequest {
   int64 book_id = 1;
 }
@@ -146,4 +132,15 @@ message GetFavoritesRequest {
 
 message GetFavoritesResponse {
   repeated Book books = 1;
+}
+
+message UploadFileRequest {
+  oneof data {
+    string original_name = 1;
+    bytes chunk = 2;
+  }
+}
+
+message UploadFileResponse {
+  string key = 1;
 }

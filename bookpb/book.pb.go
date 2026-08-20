@@ -289,7 +289,7 @@ type CreateBookRequest struct {
 	Language        string                 `protobuf:"bytes,5,opt,name=language,proto3" json:"language,omitempty"`
 	PageCount       int32                  `protobuf:"varint,6,opt,name=page_count,json=pageCount,proto3" json:"page_count,omitempty"`
 	PublicationYear int32                  `protobuf:"varint,7,opt,name=publication_year,json=publicationYear,proto3" json:"publication_year,omitempty"`
-	PdfKey          *string                `protobuf:"bytes,8,opt,name=pdf_key,json=pdfKey,proto3,oneof" json:"pdf_key,omitempty"` // из UploadURL.key
+	PdfKey          *string                `protobuf:"bytes,8,opt,name=pdf_key,json=pdfKey,proto3,oneof" json:"pdf_key,omitempty"` // из UploadFileResponse.key
 	CoverKey        *string                `protobuf:"bytes,9,opt,name=cover_key,json=coverKey,proto3,oneof" json:"cover_key,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -890,108 +890,6 @@ func (x *CountResponse) GetCount() int64 {
 	return 0
 }
 
-// 1. CreateUploadURL -> ключ + ссылка для загрузки
-// 2. клиент PUT на upload_url -> файл летит в хранилище мимо сервиса
-// 3. CreateBook с полученным key
-//
-// Тип файла определяется по расширению original_name:
-// .pdf -> книга, .jpg/.jpeg/.png -> обложка. Остальное сервис отклоняет.
-type CreateUploadURLRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	OriginalName  string                 `protobuf:"bytes,1,opt,name=original_name,json=originalName,proto3" json:"original_name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateUploadURLRequest) Reset() {
-	*x = CreateUploadURLRequest{}
-	mi := &file_book_book_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateUploadURLRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateUploadURLRequest) ProtoMessage() {}
-
-func (x *CreateUploadURLRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_book_book_proto_msgTypes[12]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateUploadURLRequest.ProtoReflect.Descriptor instead.
-func (*CreateUploadURLRequest) Descriptor() ([]byte, []int) {
-	return file_book_book_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *CreateUploadURLRequest) GetOriginalName() string {
-	if x != nil {
-		return x.OriginalName
-	}
-	return ""
-}
-
-type UploadURL struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`                              // это уйдёт в CreateBook
-	UploadUrl     string                 `protobuf:"bytes,2,opt,name=upload_url,json=uploadUrl,proto3" json:"upload_url,omitempty"` // сюда HTTP PUT
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UploadURL) Reset() {
-	*x = UploadURL{}
-	mi := &file_book_book_proto_msgTypes[13]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UploadURL) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UploadURL) ProtoMessage() {}
-
-func (x *UploadURL) ProtoReflect() protoreflect.Message {
-	mi := &file_book_book_proto_msgTypes[13]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UploadURL.ProtoReflect.Descriptor instead.
-func (*UploadURL) Descriptor() ([]byte, []int) {
-	return file_book_book_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *UploadURL) GetKey() string {
-	if x != nil {
-		return x.Key
-	}
-	return ""
-}
-
-func (x *UploadURL) GetUploadUrl() string {
-	if x != nil {
-		return x.UploadUrl
-	}
-	return ""
-}
-
 type FavoriteRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	BookId        int64                  `protobuf:"varint,1,opt,name=book_id,json=bookId,proto3" json:"book_id,omitempty"`
@@ -1001,7 +899,7 @@ type FavoriteRequest struct {
 
 func (x *FavoriteRequest) Reset() {
 	*x = FavoriteRequest{}
-	mi := &file_book_book_proto_msgTypes[14]
+	mi := &file_book_book_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1013,7 +911,7 @@ func (x *FavoriteRequest) String() string {
 func (*FavoriteRequest) ProtoMessage() {}
 
 func (x *FavoriteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_book_book_proto_msgTypes[14]
+	mi := &file_book_book_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1026,7 +924,7 @@ func (x *FavoriteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FavoriteRequest.ProtoReflect.Descriptor instead.
 func (*FavoriteRequest) Descriptor() ([]byte, []int) {
-	return file_book_book_proto_rawDescGZIP(), []int{14}
+	return file_book_book_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *FavoriteRequest) GetBookId() int64 {
@@ -1045,7 +943,7 @@ type GetFavoritesRequest struct {
 
 func (x *GetFavoritesRequest) Reset() {
 	*x = GetFavoritesRequest{}
-	mi := &file_book_book_proto_msgTypes[15]
+	mi := &file_book_book_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1057,7 +955,7 @@ func (x *GetFavoritesRequest) String() string {
 func (*GetFavoritesRequest) ProtoMessage() {}
 
 func (x *GetFavoritesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_book_book_proto_msgTypes[15]
+	mi := &file_book_book_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1070,7 +968,7 @@ func (x *GetFavoritesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFavoritesRequest.ProtoReflect.Descriptor instead.
 func (*GetFavoritesRequest) Descriptor() ([]byte, []int) {
-	return file_book_book_proto_rawDescGZIP(), []int{15}
+	return file_book_book_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetFavoritesRequest) GetPage() *PageRequest {
@@ -1089,7 +987,7 @@ type GetFavoritesResponse struct {
 
 func (x *GetFavoritesResponse) Reset() {
 	*x = GetFavoritesResponse{}
-	mi := &file_book_book_proto_msgTypes[16]
+	mi := &file_book_book_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1101,7 +999,7 @@ func (x *GetFavoritesResponse) String() string {
 func (*GetFavoritesResponse) ProtoMessage() {}
 
 func (x *GetFavoritesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_book_book_proto_msgTypes[16]
+	mi := &file_book_book_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1114,7 +1012,7 @@ func (x *GetFavoritesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFavoritesResponse.ProtoReflect.Descriptor instead.
 func (*GetFavoritesResponse) Descriptor() ([]byte, []int) {
-	return file_book_book_proto_rawDescGZIP(), []int{16}
+	return file_book_book_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetFavoritesResponse) GetBooks() []*Book {
@@ -1122,6 +1020,132 @@ func (x *GetFavoritesResponse) GetBooks() []*Book {
 		return x.Books
 	}
 	return nil
+}
+
+type UploadFileRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Data:
+	//
+	//	*UploadFileRequest_OriginalName
+	//	*UploadFileRequest_Chunk
+	Data          isUploadFileRequest_Data `protobuf_oneof:"data"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadFileRequest) Reset() {
+	*x = UploadFileRequest{}
+	mi := &file_book_book_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadFileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadFileRequest) ProtoMessage() {}
+
+func (x *UploadFileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_book_book_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadFileRequest.ProtoReflect.Descriptor instead.
+func (*UploadFileRequest) Descriptor() ([]byte, []int) {
+	return file_book_book_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *UploadFileRequest) GetData() isUploadFileRequest_Data {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *UploadFileRequest) GetOriginalName() string {
+	if x != nil {
+		if x, ok := x.Data.(*UploadFileRequest_OriginalName); ok {
+			return x.OriginalName
+		}
+	}
+	return ""
+}
+
+func (x *UploadFileRequest) GetChunk() []byte {
+	if x != nil {
+		if x, ok := x.Data.(*UploadFileRequest_Chunk); ok {
+			return x.Chunk
+		}
+	}
+	return nil
+}
+
+type isUploadFileRequest_Data interface {
+	isUploadFileRequest_Data()
+}
+
+type UploadFileRequest_OriginalName struct {
+	OriginalName string `protobuf:"bytes,1,opt,name=original_name,json=originalName,proto3,oneof"`
+}
+
+type UploadFileRequest_Chunk struct {
+	Chunk []byte `protobuf:"bytes,2,opt,name=chunk,proto3,oneof"`
+}
+
+func (*UploadFileRequest_OriginalName) isUploadFileRequest_Data() {}
+
+func (*UploadFileRequest_Chunk) isUploadFileRequest_Data() {}
+
+type UploadFileResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadFileResponse) Reset() {
+	*x = UploadFileResponse{}
+	mi := &file_book_book_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadFileResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadFileResponse) ProtoMessage() {}
+
+func (x *UploadFileResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_book_book_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadFileResponse.ProtoReflect.Descriptor instead.
+func (*UploadFileResponse) Descriptor() ([]byte, []int) {
+	return file_book_book_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *UploadFileResponse) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
 }
 
 var File_book_book_proto protoreflect.FileDescriptor
@@ -1227,24 +1251,24 @@ const file_book_book_proto_rawDesc = "" +
 	"\vcategory_id\x18\x01 \x01(\x03R\n" +
 	"categoryId\"%\n" +
 	"\rCountResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x03R\x05count\"=\n" +
-	"\x16CreateUploadURLRequest\x12#\n" +
-	"\roriginal_name\x18\x01 \x01(\tR\foriginalName\"<\n" +
-	"\tUploadURL\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x1d\n" +
-	"\n" +
-	"upload_url\x18\x02 \x01(\tR\tuploadUrl\"*\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count\"*\n" +
 	"\x0fFavoriteRequest\x12\x17\n" +
 	"\abook_id\x18\x01 \x01(\x03R\x06bookId\"<\n" +
 	"\x13GetFavoritesRequest\x12%\n" +
 	"\x04page\x18\x01 \x01(\v2\x11.book.PageRequestR\x04page\"8\n" +
 	"\x14GetFavoritesResponse\x12 \n" +
 	"\x05books\x18\x01 \x03(\v2\n" +
-	".book.BookR\x05books*t\n" +
+	".book.BookR\x05books\"Z\n" +
+	"\x11UploadFileRequest\x12%\n" +
+	"\roriginal_name\x18\x01 \x01(\tH\x00R\foriginalName\x12\x16\n" +
+	"\x05chunk\x18\x02 \x01(\fH\x00R\x05chunkB\x06\n" +
+	"\x04data\"&\n" +
+	"\x12UploadFileResponse\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key*t\n" +
 	"\rBookSortField\x12\x1f\n" +
 	"\x1bBOOK_SORT_FIELD_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aBOOK_SORT_FIELD_CREATED_AT\x10\x01\x12\"\n" +
-	"\x1eBOOK_SORT_FIELD_DOWNLOAD_COUNT\x10\x022\x95\x06\n" +
+	"\x1eBOOK_SORT_FIELD_DOWNLOAD_COUNT\x10\x022\x96\x06\n" +
 	"\vBookService\x121\n" +
 	"\n" +
 	"CreateBook\x12\x17.book.CreateBookRequest\x1a\n" +
@@ -1259,8 +1283,9 @@ const file_book_book_proto_rawDesc = "" +
 	"DeleteBook\x12\x17.book.DeleteBookRequest\x1a\x16.google.protobuf.Empty\x12U\n" +
 	"\x16IncrementDownloadCount\x12#.book.IncrementDownloadCountRequest\x1a\x16.google.protobuf.Empty\x12J\n" +
 	"\x12CountBooksByAuthor\x12\x1f.book.CountBooksByAuthorRequest\x1a\x13.book.CountResponse\x12N\n" +
-	"\x14CountBooksByCategory\x12!.book.CountBooksByCategoryRequest\x1a\x13.book.CountResponse\x12@\n" +
-	"\x0fCreateUploadURL\x12\x1c.book.CreateUploadURLRequest\x1a\x0f.book.UploadURL\x12<\n" +
+	"\x14CountBooksByCategory\x12!.book.CountBooksByCategoryRequest\x1a\x13.book.CountResponse\x12A\n" +
+	"\n" +
+	"UploadFile\x12\x17.book.UploadFileRequest\x1a\x18.book.UploadFileResponse(\x01\x12<\n" +
 	"\vAddFavorite\x12\x15.book.FavoriteRequest\x1a\x16.google.protobuf.Empty\x12?\n" +
 	"\x0eRemoveFavorite\x12\x15.book.FavoriteRequest\x1a\x16.google.protobuf.Empty\x12E\n" +
 	"\fGetFavorites\x12\x19.book.GetFavoritesRequest\x1a\x1a.book.GetFavoritesResponseB\tZ\a/bookpbb\x06proto3"
@@ -1293,11 +1318,11 @@ var file_book_book_proto_goTypes = []any{
 	(*CountBooksByAuthorRequest)(nil),     // 10: book.CountBooksByAuthorRequest
 	(*CountBooksByCategoryRequest)(nil),   // 11: book.CountBooksByCategoryRequest
 	(*CountResponse)(nil),                 // 12: book.CountResponse
-	(*CreateUploadURLRequest)(nil),        // 13: book.CreateUploadURLRequest
-	(*UploadURL)(nil),                     // 14: book.UploadURL
-	(*FavoriteRequest)(nil),               // 15: book.FavoriteRequest
-	(*GetFavoritesRequest)(nil),           // 16: book.GetFavoritesRequest
-	(*GetFavoritesResponse)(nil),          // 17: book.GetFavoritesResponse
+	(*FavoriteRequest)(nil),               // 13: book.FavoriteRequest
+	(*GetFavoritesRequest)(nil),           // 14: book.GetFavoritesRequest
+	(*GetFavoritesResponse)(nil),          // 15: book.GetFavoritesResponse
+	(*UploadFileRequest)(nil),             // 16: book.UploadFileRequest
+	(*UploadFileResponse)(nil),            // 17: book.UploadFileResponse
 	(*timestamppb.Timestamp)(nil),         // 18: google.protobuf.Timestamp
 	(*emptypb.Empty)(nil),                 // 19: google.protobuf.Empty
 }
@@ -1318,10 +1343,10 @@ var file_book_book_proto_depIdxs = []int32{
 	9,  // 13: book.BookService.IncrementDownloadCount:input_type -> book.IncrementDownloadCountRequest
 	10, // 14: book.BookService.CountBooksByAuthor:input_type -> book.CountBooksByAuthorRequest
 	11, // 15: book.BookService.CountBooksByCategory:input_type -> book.CountBooksByCategoryRequest
-	13, // 16: book.BookService.CreateUploadURL:input_type -> book.CreateUploadURLRequest
-	15, // 17: book.BookService.AddFavorite:input_type -> book.FavoriteRequest
-	15, // 18: book.BookService.RemoveFavorite:input_type -> book.FavoriteRequest
-	16, // 19: book.BookService.GetFavorites:input_type -> book.GetFavoritesRequest
+	16, // 16: book.BookService.UploadFile:input_type -> book.UploadFileRequest
+	13, // 17: book.BookService.AddFavorite:input_type -> book.FavoriteRequest
+	13, // 18: book.BookService.RemoveFavorite:input_type -> book.FavoriteRequest
+	14, // 19: book.BookService.GetFavorites:input_type -> book.GetFavoritesRequest
 	1,  // 20: book.BookService.CreateBook:output_type -> book.Book
 	1,  // 21: book.BookService.GetBook:output_type -> book.Book
 	6,  // 22: book.BookService.GetBooks:output_type -> book.GetBooksResponse
@@ -1330,10 +1355,10 @@ var file_book_book_proto_depIdxs = []int32{
 	19, // 25: book.BookService.IncrementDownloadCount:output_type -> google.protobuf.Empty
 	12, // 26: book.BookService.CountBooksByAuthor:output_type -> book.CountResponse
 	12, // 27: book.BookService.CountBooksByCategory:output_type -> book.CountResponse
-	14, // 28: book.BookService.CreateUploadURL:output_type -> book.UploadURL
+	17, // 28: book.BookService.UploadFile:output_type -> book.UploadFileResponse
 	19, // 29: book.BookService.AddFavorite:output_type -> google.protobuf.Empty
 	19, // 30: book.BookService.RemoveFavorite:output_type -> google.protobuf.Empty
-	17, // 31: book.BookService.GetFavorites:output_type -> book.GetFavoritesResponse
+	15, // 31: book.BookService.GetFavorites:output_type -> book.GetFavoritesResponse
 	20, // [20:32] is the sub-list for method output_type
 	8,  // [8:20] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
@@ -1350,6 +1375,10 @@ func file_book_book_proto_init() {
 	file_book_book_proto_msgTypes[2].OneofWrappers = []any{}
 	file_book_book_proto_msgTypes[4].OneofWrappers = []any{}
 	file_book_book_proto_msgTypes[6].OneofWrappers = []any{}
+	file_book_book_proto_msgTypes[15].OneofWrappers = []any{
+		(*UploadFileRequest_OriginalName)(nil),
+		(*UploadFileRequest_Chunk)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

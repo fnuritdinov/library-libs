@@ -28,7 +28,7 @@ const (
 	BookService_IncrementDownloadCount_FullMethodName = "/book.BookService/IncrementDownloadCount"
 	BookService_CountBooksByAuthor_FullMethodName     = "/book.BookService/CountBooksByAuthor"
 	BookService_CountBooksByCategory_FullMethodName   = "/book.BookService/CountBooksByCategory"
-	BookService_CreateUploadURL_FullMethodName        = "/book.BookService/CreateUploadURL"
+	BookService_UploadFile_FullMethodName             = "/book.BookService/UploadFile"
 	BookService_AddFavorite_FullMethodName            = "/book.BookService/AddFavorite"
 	BookService_RemoveFavorite_FullMethodName         = "/book.BookService/RemoveFavorite"
 	BookService_GetFavorites_FullMethodName           = "/book.BookService/GetFavorites"
@@ -47,8 +47,9 @@ type BookServiceClient interface {
 	// Gateway зовёт перед удалением автора/категории в core-сервисе.
 	CountBooksByAuthor(ctx context.Context, in *CountBooksByAuthorRequest, opts ...grpc.CallOption) (*CountResponse, error)
 	CountBooksByCategory(ctx context.Context, in *CountBooksByCategoryRequest, opts ...grpc.CallOption) (*CountResponse, error)
-	// Байты через gRPC не ходят: сервис выдаёт ссылку, клиент льёт файл сам.
-	CreateUploadURL(ctx context.Context, in *CreateUploadURLRequest, opts ...grpc.CallOption) (*UploadURL, error)
+	// Файл приходит потоком: первое сообщение — имя, дальше куски.
+	// Сервис кладёт его в хранилище и возвращает key для CreateBook.
+	UploadFile(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadFileRequest, UploadFileResponse], error)
 	// user_id не в запросах — gateway кладёт его в metadata (x-user-id).
 	AddFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	RemoveFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -143,15 +144,18 @@ func (c *bookServiceClient) CountBooksByCategory(ctx context.Context, in *CountB
 	return out, nil
 }
 
-func (c *bookServiceClient) CreateUploadURL(ctx context.Context, in *CreateUploadURLRequest, opts ...grpc.CallOption) (*UploadURL, error) {
+func (c *bookServiceClient) UploadFile(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadFileRequest, UploadFileResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UploadURL)
-	err := c.cc.Invoke(ctx, BookService_CreateUploadURL_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &BookService_ServiceDesc.Streams[0], BookService_UploadFile_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[UploadFileRequest, UploadFileResponse]{ClientStream: stream}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type BookService_UploadFileClient = grpc.ClientStreamingClient[UploadFileRequest, UploadFileResponse]
 
 func (c *bookServiceClient) AddFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -196,8 +200,9 @@ type BookServiceServer interface {
 	// Gateway зовёт перед удалением автора/категории в core-сервисе.
 	CountBooksByAuthor(context.Context, *CountBooksByAuthorRequest) (*CountResponse, error)
 	CountBooksByCategory(context.Context, *CountBooksByCategoryRequest) (*CountResponse, error)
-	// Байты через gRPC не ходят: сервис выдаёт ссылку, клиент льёт файл сам.
-	CreateUploadURL(context.Context, *CreateUploadURLRequest) (*UploadURL, error)
+	// Файл приходит потоком: первое сообщение — имя, дальше куски.
+	// Сервис кладёт его в хранилище и возвращает key для CreateBook.
+	UploadFile(grpc.ClientStreamingServer[UploadFileRequest, UploadFileResponse]) error
 	// user_id не в запросах — gateway кладёт его в metadata (x-user-id).
 	AddFavorite(context.Context, *FavoriteRequest) (*emptypb.Empty, error)
 	RemoveFavorite(context.Context, *FavoriteRequest) (*emptypb.Empty, error)
@@ -236,8 +241,8 @@ func (UnimplementedBookServiceServer) CountBooksByAuthor(context.Context, *Count
 func (UnimplementedBookServiceServer) CountBooksByCategory(context.Context, *CountBooksByCategoryRequest) (*CountResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CountBooksByCategory not implemented")
 }
-func (UnimplementedBookServiceServer) CreateUploadURL(context.Context, *CreateUploadURLRequest) (*UploadURL, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateUploadURL not implemented")
+func (UnimplementedBookServiceServer) UploadFile(grpc.ClientStreamingServer[UploadFileRequest, UploadFileResponse]) error {
+	return status.Error(codes.Unimplemented, "method UploadFile not implemented")
 }
 func (UnimplementedBookServiceServer) AddFavorite(context.Context, *FavoriteRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method AddFavorite not implemented")
@@ -413,23 +418,12 @@ func _BookService_CountBooksByCategory_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BookService_CreateUploadURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateUploadURLRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BookServiceServer).CreateUploadURL(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: BookService_CreateUploadURL_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookServiceServer).CreateUploadURL(ctx, req.(*CreateUploadURLRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+func _BookService_UploadFile_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BookServiceServer).UploadFile(&grpc.GenericServerStream[UploadFileRequest, UploadFileResponse]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type BookService_UploadFileServer = grpc.ClientStreamingServer[UploadFileRequest, UploadFileResponse]
 
 func _BookService_AddFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FavoriteRequest)
@@ -525,10 +519,6 @@ var BookService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _BookService_CountBooksByCategory_Handler,
 		},
 		{
-			MethodName: "CreateUploadURL",
-			Handler:    _BookService_CreateUploadURL_Handler,
-		},
-		{
 			MethodName: "AddFavorite",
 			Handler:    _BookService_AddFavorite_Handler,
 		},
@@ -541,6 +531,12 @@ var BookService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _BookService_GetFavorites_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "UploadFile",
+			Handler:       _BookService_UploadFile_Handler,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "book/book.proto",
 }
